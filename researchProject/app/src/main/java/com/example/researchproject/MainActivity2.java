@@ -2,6 +2,7 @@ package com.example.researchproject;
 
 import androidx.appcompat.app.AppCompatActivity;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.util.Base64;
 import android.util.Log;
@@ -61,7 +62,8 @@ public class MainActivity2 extends AppCompatActivity {
             @Override
             public void onClick(View view) {
                 CallResult<ListItems> songs = mSpotifyAppRemote.getContentApi().getRecommendedContentItems("IU");
-                
+                Intent intent = new Intent(MainActivity2.this, TextRecognitionActivity.class);
+                startActivity(intent);
             }
         });
 
