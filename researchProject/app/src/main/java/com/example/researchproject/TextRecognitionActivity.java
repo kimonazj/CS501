@@ -20,6 +20,8 @@ import android.provider.MediaStore;
 import android.util.Log;
 import android.util.SparseIntArray;
 import android.view.Surface;
+import android.view.View;
+import android.widget.Button;
 import android.widget.TextView;
 
 import com.google.android.gms.tasks.OnFailureListener;
@@ -37,6 +39,7 @@ public class TextRecognitionActivity extends AppCompatActivity {
     String search;
 
     TextView resultView;
+    Button btnCamera;
 
 
 
@@ -44,8 +47,15 @@ public class TextRecognitionActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_text_recognition);
+        resultView = (TextView) findViewById(R.id.searchResult);
+        btnCamera = (Button) findViewById(R.id.btnCamera);
 
-        dispatchTakePictureIntent();
+        btnCamera.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                dispatchTakePictureIntent();
+            }
+        });
     }
 
     @Override
@@ -58,7 +68,6 @@ public class TextRecognitionActivity extends AppCompatActivity {
         }
 
         recognizeText(image);
-        resultView = (TextView) findViewById(R.id.searchResult);
     }
 
 
