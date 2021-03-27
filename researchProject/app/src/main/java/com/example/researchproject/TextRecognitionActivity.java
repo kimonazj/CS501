@@ -17,6 +17,7 @@ import android.hardware.camera2.CameraManager;
 import android.os.Build;
 import android.os.Bundle;
 import android.provider.MediaStore;
+import android.util.Log;
 import android.util.SparseIntArray;
 import android.view.Surface;
 import android.widget.TextView;
@@ -35,7 +36,7 @@ public class TextRecognitionActivity extends AppCompatActivity {
     InputImage image;
     String search;
 
-    TextView result;
+    TextView resultView;
 
 
 
@@ -57,8 +58,7 @@ public class TextRecognitionActivity extends AppCompatActivity {
         }
 
         recognizeText(image);
-        result = (TextView) findViewById(R.id.searchResult);
-        result.setText(search);
+        resultView = (TextView) findViewById(R.id.searchResult);
     }
 
 
@@ -74,12 +74,11 @@ public class TextRecognitionActivity extends AppCompatActivity {
                         .addOnSuccessListener(new OnSuccessListener<Text>() {
                             @Override
                             public void onSuccess(Text visionText) {
-
-                                search = visionText.getText();
                                 // Task completed successfully
                                 // [START_EXCLUDE]
                                 // [START get_text]
-                               // processTextBlock(visionText);
+                               search = processTextBlock(visionText);
+                                resultView.setText(search);
                                 // [END get_text]
                                 // [END_EXCLUDE]
                             }
@@ -88,6 +87,7 @@ public class TextRecognitionActivity extends AppCompatActivity {
                                 new OnFailureListener() {
                                     @Override
                                     public void onFailure(@NonNull Exception e) {
+                                        Log.d("textrecognition", e.toString());
                                         // Task failed with an exception
                                         // ...
                                     }
@@ -95,7 +95,8 @@ public class TextRecognitionActivity extends AppCompatActivity {
         // [END run_detector]
     }
 
-    private void processTextBlock(Text result) {
+    private String processTextBlock(Text result) {
+        String returnValue = "";
         // [START mlkit_process_text_block]
         String resultText = result.getText();
         for (Text.TextBlock block : result.getTextBlocks()) {
@@ -104,15 +105,17 @@ public class TextRecognitionActivity extends AppCompatActivity {
             Rect blockFrame = block.getBoundingBox();
             for (Text.Line line : block.getLines()) {
                 String lineText = line.getText();
+                returnValue += lineText;
                 Point[] lineCornerPoints = line.getCornerPoints();
                 Rect lineFrame = line.getBoundingBox();
-                for (Text.Element element : line.getElements()) {
-                    String elementText = element.getText();
-                    Point[] elementCornerPoints = element.getCornerPoints();
-                    Rect elementFrame = element.getBoundingBox();
-                }
+//                for (Text.Element element : line.getElements()) {
+//                    String elementText = element.getText();
+//                    Point[] elementCornerPoints = element.getCornerPoints();
+//                    Rect elementFrame = element.getBoundingBox();
+//                }
             }
         }
+        return returnValue;
         // [END mlkit_process_text_block]
     }
 

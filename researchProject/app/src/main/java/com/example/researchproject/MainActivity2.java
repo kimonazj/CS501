@@ -61,7 +61,7 @@ public class MainActivity2 extends AppCompatActivity {
         btnGetSongs.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                CallResult<ListItems> songs = mSpotifyAppRemote.getContentApi().getRecommendedContentItems("IU");
+                //CallResult<ListItems> songs = mSpotifyAppRemote.getContentApi().getRecommendedContentItems("IU");
                 Intent intent = new Intent(MainActivity2.this, TextRecognitionActivity.class);
                 startActivity(intent);
             }
