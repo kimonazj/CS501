@@ -40,7 +40,11 @@ public class TextRecognitionActivity extends AppCompatActivity {
 
     TextView resultView;
     Button btnCamera;
-
+    private Button Back;
+    public void backFunction(){
+        Intent intent = new Intent(TextRecognitionActivity.this, MainActivity2.class);
+        startActivity(intent);
+    }
 
 
     @Override
@@ -49,6 +53,7 @@ public class TextRecognitionActivity extends AppCompatActivity {
         setContentView(R.layout.activity_text_recognition);
         resultView = (TextView) findViewById(R.id.searchResult);
         btnCamera = (Button) findViewById(R.id.btnCamera);
+        Back = findViewById(R.id.back);
 
         btnCamera.setOnClickListener(new View.OnClickListener() {
             @Override

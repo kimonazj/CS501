@@ -46,8 +46,22 @@ public class MainActivity2 extends AppCompatActivity {
 
     String access_token;
 
-    TextView tv;
+    //TextView tv;
     Button btnGetSongs;
+
+    private ArrayList<String> searchedWords;
+    final int MAX_SEARCH = 20;
+
+    private Button Back;
+    public void backFunction(){
+        Intent intent = new Intent(MainActivity2.this, MainActivity.class);
+        startActivity(intent);
+    }
+    private Button History;
+    public void viewHistory(){
+        Intent intent = new Intent(MainActivity2.this, historyClass.class);
+        startActivity(intent);
+    }
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -55,14 +69,18 @@ public class MainActivity2 extends AppCompatActivity {
         setContentView(R.layout.activity_main2);
 
 
-        tv = (TextView) findViewById(R.id.textView);
+        //tv = (TextView) findViewById(R.id.textView);
         btnGetSongs = (Button) findViewById(R.id.btnGetSongs);
+        Back = findViewById(R.id.back);
+        History = findViewById(R.id.history);
+        searchedWords = new String[MAX_SEARCH];
 
         btnGetSongs.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 //CallResult<ListItems> songs = mSpotifyAppRemote.getContentApi().getRecommendedContentItems("IU");
                 Intent intent = new Intent(MainActivity2.this, TextRecognitionActivity.class);
+                intent.putExtra("Strings", searchedWords);
                 startActivity(intent);
             }
         });
