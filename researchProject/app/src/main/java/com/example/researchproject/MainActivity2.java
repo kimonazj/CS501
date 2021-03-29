@@ -3,6 +3,7 @@ package com.example.researchproject;
 import androidx.appcompat.app.AppCompatActivity;
 
 import android.content.Intent;
+import android.media.session.MediaSession;
 import android.os.Bundle;
 import android.util.Base64;
 import android.util.Log;
@@ -11,57 +12,58 @@ import android.widget.Button;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.android.volley.AuthFailureError;
+import com.android.volley.NetworkResponse;
+import com.android.volley.Request;
+import com.android.volley.RequestQueue;
+import com.android.volley.Response;
+import com.android.volley.VolleyError;
+import com.android.volley.VolleyLog;
+import com.android.volley.toolbox.HttpHeaderParser;
+import com.android.volley.toolbox.JsonObjectRequest;
+import com.android.volley.toolbox.StringRequest;
+import com.android.volley.toolbox.Volley;
+import com.google.gson.JsonObject;
+import com.google.gson.JsonParser;
 import com.spotify.android.appremote.api.ConnectionParams;
 import com.spotify.android.appremote.api.Connector;
 import com.spotify.android.appremote.api.SpotifyAppRemote;
 
-import com.spotify.protocol.client.CallResult;
-import com.spotify.protocol.client.Subscription;
-import com.spotify.protocol.types.ListItem;
-import com.spotify.protocol.types.ListItems;
-import com.spotify.protocol.types.PlayerState;
-import com.spotify.protocol.types.Track;
-
-import java.io.BufferedOutputStream;
 import java.io.BufferedReader;
-import java.io.BufferedWriter;
 import java.io.InputStreamReader;
 import java.io.OutputStream;
-import java.io.OutputStreamWriter;
+import java.io.UnsupportedEncodingException;
 import java.net.HttpURLConnection;
-import java.net.MalformedURLException;
 import java.net.URL;
-import java.net.URLConnection;
+import java.net.URLEncoder;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
-import retrofit2.Retrofit;
+import org.json.*;
+import com.loopj.android.http.*;
+
+import cz.msebera.android.httpclient.entity.StringEntity;
+import cz.msebera.android.httpclient.message.BasicHeader;
 
 public class MainActivity2 extends AppCompatActivity {
 
     private static final String CLIENT_ID = "795863a23c73431496c269b1e0124dd5";
     private static final String CLIENT_SECRET = "1a04a3bc3fcf4992ba2045c83e1f6756";
-    String encodedString = "Basic " +  new String(Base64.encode((CLIENT_ID + ":" + CLIENT_SECRET).getBytes(), Base64.NO_WRAP));
+    private static final String REDIRECT_URI = "http://com.example.researchproject/callback";
+    private String encodedCredentials = "Basic " +  new String(Base64.encode((CLIENT_ID + ":" + CLIENT_SECRET).getBytes(), Base64.NO_WRAP));
 
     private SpotifyAppRemote mSpotifyAppRemote;
-    private static final String URL = "https://accounts.spotify.com/api/token";
 
-    String access_token;
+    private static String access_token;
+    private static String text_recognition_output;
+    private static String album_id;
+    private static String first_song_url;
+    private RequestQueue requestQueue;
 
-    //TextView tv;
+    TextView tv;
     Button btnGetSongs;
-
-    private ArrayList<String> searchedWords;
-    final int MAX_SEARCH = 20;
-
-    private Button Back;
-    public void backFunction(){
-        Intent intent = new Intent(MainActivity2.this, MainActivity.class);
-        startActivity(intent);
-    }
-    private Button History;
-    public void viewHistory(){
-        Intent intent = new Intent(MainActivity2.this, historyClass.class);
-        startActivity(intent);
-    }
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -69,62 +71,22 @@ public class MainActivity2 extends AppCompatActivity {
         setContentView(R.layout.activity_main2);
 
 
-        //tv = (TextView) findViewById(R.id.textView);
+        tv = (TextView) findViewById(R.id.textView);
         btnGetSongs = (Button) findViewById(R.id.btnGetSongs);
-        Back = findViewById(R.id.back);
-        History = findViewById(R.id.history);
-        searchedWords = new String[MAX_SEARCH];
 
         btnGetSongs.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                //CallResult<ListItems> songs = mSpotifyAppRemote.getContentApi().getRecommendedContentItems("IU");
                 Intent intent = new Intent(MainActivity2.this, TextRecognitionActivity.class);
-                intent.putExtra("Strings", searchedWords);
                 startActivity(intent);
             }
         });
 
+        requestQueue = Volley.newRequestQueue(this);
 
+        getAccessToken();
 
-
-
-
-        String access_token = "";
-//
-//        try {
-//
-//            URL url = new URL(URL);
-//            HttpURLConnection conn = (HttpURLConnection) url.openConnection();
-//            conn.setDoOutput(true);
-//            conn.setDoInput(true);
-//            conn.setRequestMethod("POST");
-//            conn.setRequestProperty("Authorization", encodedString);
-//            conn.setRequestProperty( "Content-Type", "application/x-www-form-urlencoded");
-//            conn.setRequestProperty( "Accept", "*/*" );
-//
-//            conn.connect();
-//
-//            OutputStream out = new BufferedOutputStream(conn.getOutputStream());
-//            BufferedWriter writer = new BufferedWriter(new OutputStreamWriter(out, "UTF-8"));
-//            writer.write("grant_type=client_credentials");
-//            writer.flush();
-//            writer.close();
-//
-//            out.close();
-//
-//
-//            InputStreamReader in = new InputStreamReader(conn.getInputStream());
-//            BufferedReader br = new BufferedReader(in);
-//            String output;
-//            while ((output = br.readLine()) != null) {
-//                access_token += (output);
-//            }
-//
-//        } catch (Exception e) {
-//            e.printStackTrace();
-//        }
-
+        Log.d("MainActivity2", "Token is " + access_token + "! Happy API Search!");
     }
 
     @Override
@@ -133,7 +95,7 @@ public class MainActivity2 extends AppCompatActivity {
 
 
         ConnectionParams connectionParams = new ConnectionParams.Builder(CLIENT_ID)
-                .setRedirectUri("http://com.example.researchproject/callback")
+                .setRedirectUri(REDIRECT_URI)
                 .showAuthView(true)
                 .build();
 
@@ -155,66 +117,82 @@ public class MainActivity2 extends AppCompatActivity {
                     }
 
                 });
+
+
+        if (text_recognition_output != null) {
+
+            volleyGet("Search Album", text_recognition_output);
+            volleyGet("First Song of Album", album_id);
+        }
     }
     @Override
     protected void onStop() {
         super.onStop();
         SpotifyAppRemote.disconnect(mSpotifyAppRemote);
     }
-    
-    public void volleyGet(){
-        String url = "https://api.spotify.com/v1/search?";
 
-        RequestQueue requestQueue = Volley.newRequestQueue(this);
-        JsonObjectRequest jsonObjectRequest = new JsonObjectRequest(Request.Method.GET, url, null, new Response.Listener<JSONObject>() {
+    @Override
+    protected void onResume() {
+        super.onResume();
+    }
+
+    public static void setAccessToken(String token) {
+        access_token = token;
+    }
+
+    public static void setAlbumID (String id) {
+        album_id = id;
+    }
+
+    public static void setSongURL(String url) {
+        first_song_url = url;
+    }
+
+    public static void setTextRecognitionOutput(String name) {
+        text_recognition_output = name;
+    }
+
+    private void getAccessToken(){
+        TokenRequest tokenRequest = new TokenRequest();
+        tokenRequest.setResultListener(new TokenRequest.ResultListener() {
             @Override
-            public void onResponse(JSONObject response) {
+            public void onResult(JSONObject result) {
                 try {
-                    JSONArray jsonArray = response.getJSONArray("data");
+                    access_token = result.getString("access_token");
                 } catch (JSONException e) {
                     e.printStackTrace();
                 }
             }
-        }, new Response.ErrorListener() {
-            @Override
-            public void onErrorResponse(VolleyError error) {
-                error.printStackTrace();
-            }
         });
 
-        requestQueue.add(jsonObjectRequest);
+        tokenRequest.getAccessToken(this, encodedCredentials);
     }
 
-    public void volleyPostAccessToken() {
-        String postUrl = "https://accounts.spotify.com/api/token";
-        RequestQueue requestQueue = Volley.newRequestQueue(this);
+    private void volleyGet(String whatToGet, String input) {
+        GetRequest getRequest = new GetRequest();
 
-        JSONObject postData = new JSONObject();
+        getRequest.setResultListener(result -> {
+            try {
+                JSONArray jsonArray = result.getJSONArray("items");
+                if (whatToGet.equals("Search Album")) {
+                    JSONObject first_album = jsonArray.getJSONObject(0);
+                    album_id = first_album.getString("id");
+                } else {
+                    JSONObject first_track = jsonArray.getJSONObject(0);
+                    first_song_url = first_track.getString("preview_url");
+                }
+            } catch (JSONException e) {
+                e.printStackTrace();
+            }
+
+        });
+
         try {
-            postData.put("grant_type", "client_credentials");
-
-        } catch (JSONException e) {
+            getRequest.volleyGet(this, whatToGet, input, access_token);
+        } catch (UnsupportedEncodingException e) {
             e.printStackTrace();
         }
-
-        JsonObjectRequest jsonObjectRequest = new JsonObjectRequest(Request.Method.POST, postUrl, postData, new Response.Listener<JSONObject>() {
-            @Override
-            public void onResponse(JSONObject response) {
-                try {
-                    Log.d("MainActivity2", "access_token from the post request is: " + response.getString("access_token"));
-                } catch (JSONException e) {
-                    e.printStackTrace();
-                }
-            }
-        }, new Response.ErrorListener() {
-            @Override
-            public void onErrorResponse(VolleyError error) {
-                Log.d("MainActivity2", "Error: " + error.getMessage());
-                error.printStackTrace();
-            }
-        });
-
-        requestQueue.add(jsonObjectRequest);
     }
+
 
 }
