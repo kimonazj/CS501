@@ -20,8 +20,6 @@ import android.provider.MediaStore;
 import android.util.Log;
 import android.util.SparseIntArray;
 import android.view.Surface;
-import android.view.View;
-import android.widget.Button;
 import android.widget.TextView;
 
 import com.google.android.gms.tasks.OnFailureListener;
@@ -39,28 +37,15 @@ public class TextRecognitionActivity extends AppCompatActivity {
     String search;
 
     TextView resultView;
-    Button btnCamera;
-    private Button Back;
-    public void backFunction(){
-        Intent intent = new Intent(TextRecognitionActivity.this, MainActivity2.class);
-        startActivity(intent);
-    }
+
 
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_text_recognition);
-        resultView = (TextView) findViewById(R.id.searchResult);
-        btnCamera = (Button) findViewById(R.id.btnCamera);
-        Back = findViewById(R.id.back);
 
-        btnCamera.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                dispatchTakePictureIntent();
-            }
-        });
+        dispatchTakePictureIntent();
     }
 
     @Override
@@ -71,6 +56,8 @@ public class TextRecognitionActivity extends AppCompatActivity {
             Bitmap imageBitmap = (Bitmap) extras.get("data");
             image = InputImage.fromBitmap(imageBitmap, 0);
         }
+
+        resultView = (TextView) findViewById(R.id.searchResult);
 
         recognizeText(image);
     }
@@ -91,8 +78,13 @@ public class TextRecognitionActivity extends AppCompatActivity {
                                 // Task completed successfully
                                 // [START_EXCLUDE]
                                 // [START get_text]
-                               search = processTextBlock(visionText);
+                                search = processTextBlock(visionText);
                                 resultView.setText(search);
+
+                                MainActivity2.setTextRecognitionOutput(search);
+
+                                Intent intent = new Intent(TextRecognitionActivity.this, MainActivity2.class);
+                                startActivity(intent);
                                 // [END get_text]
                                 // [END_EXCLUDE]
                             }
