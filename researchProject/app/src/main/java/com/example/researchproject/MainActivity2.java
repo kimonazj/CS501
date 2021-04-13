@@ -116,7 +116,7 @@ public class MainActivity2 extends AppCompatActivity {
         account = GoogleSignIn.getLastSignedInAccount(this);
 
         // create instance of database
-        db = Room.databaseBuilder(getApplicationContext(), AppDatabase.class, "project_db_v2").build();
+        db = Room.databaseBuilder(getApplicationContext(), AppDatabase.class, "project_db_v3").build();
 
         // set reviewListView
         // reviewListView = (ListView) findViewById(R.id.reviewListView);

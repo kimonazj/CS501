@@ -10,7 +10,7 @@ public class HistoryWithAlbums {
     @Embedded public History history;
     @Relation(
             parentColumn = "historyId",
-            entityColumn = "albumId",
+            entityColumn = "songUri",
             associateBy = @Junction(HistoryAlbumCrossRef.class)
     )
     public List<Album> albums;

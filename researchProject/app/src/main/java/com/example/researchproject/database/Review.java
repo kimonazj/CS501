@@ -31,7 +31,9 @@ public class Review {
         this.reviewDetails = reviewDetails;
     }
 
-    public String getAlbumId() {
+    public int getReviewId() { return reviewId; }
+
+    public String getSongUri() {
         return songUri;
     }
 
