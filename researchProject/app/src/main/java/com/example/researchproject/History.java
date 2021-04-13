@@ -22,7 +22,13 @@ public class History extends AppCompatActivity {
     TextView preferencetv;
     ListView listview;
 
+
     String selectedsong;
+
+    AppDatabase db;
+    // TODO: get userid
+    private String USER_ID;
+    private List<History> historyList;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -37,18 +43,26 @@ public class History extends AppCompatActivity {
         preferencetv = findViewById(R.id.recomtv);
         listview = findViewById(R.id.listview);
 
-        // get intent extras
-        Bundle extras = getIntent().getExtras();
-        if (extras == null){
-            return;
-        }
-        // TODO: maybe change these to database
-        artistbase = extras.getBoolean("ifartist");
-        songhistory = extras.getStringArrayList("songhistory");
-        if(songhistory.size() == 0){
+        // TODO: change this working with database
+        songhistory = new ArrayList<String>();
+        if(songhistory == null || songhistory.size() == 0){
             //if there is no history, display the default welcome song
-            songhistory.add("Welcome to NewYork - By Taylor Swift");
+            songhistory.add("Welcome to NewYork");
+            songhistory.add("No More");
         }
+        //display song history in the listview
+        ArrayAdapter adapter= new ArrayAdapter<String>(this, android.R.layout.simple_list_item_1, songhistory);
+        listview.setAdapter(adapter);
+
+        listview.setOnItemClickListener(new AdapterView.OnItemClickListener(){
+            @Override
+            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+                selectedsong = String.valueOf(parent.getItemAtPosition(position));
+            }
+        });
+
+        // create instance of database
+        db = Room.databaseBuilder(getApplicationContext(), AppDatabase.class, "project_db_v3").build();
 
         // change recommendation preference
         change.setOnClickListener(new View.OnClickListener() {
@@ -71,7 +85,6 @@ public class History extends AppCompatActivity {
                 if(selectedsong!=null){
                     Intent intent = new Intent(History.this, MainActivity2.class);
                     intent.putExtra("textOutput", selectedsong);
-                    intent.putExtra("ifartist",artistbase);
                     startActivity(intent);
                 }
                 else{
@@ -85,12 +98,59 @@ public class History extends AppCompatActivity {
             @Override
             public void onClick(View v) {
                 Intent welcome = new Intent(History.this, Welcome.class);
-                welcome.putExtra("ifartist", artistbase);
-                welcome.putExtra("songhistory", songhistory);
                 startActivity(welcome);
             }
         });
 
-        // TODO: initialize the listview
     }
+
+    // TODO: retrieveHistory
+    /*private static class retrieveHistory extends AsyncTask<Void,Void,List<Review>> {
+
+        private WeakReference<History> activityReference;
+
+        // only retain a weak reference to the activity
+        retrieveReviews(History context) {
+            activityReference = new WeakReference<>(context);
+        }
+
+        // doInBackground methods runs on a worker thread
+        @Override
+        protected List<History> doInBackground(Void... objs) {
+            if (activityReference.get() != null) {
+                return activityReference.get().db.historyDao().findByUserId(activityReference.get().USER_ID);
+            }
+            else {
+                return null;
+            }
+        }
+
+        // onPostExecute runs on main thread
+        @Override
+        protected void onPostExecute(List<History> histories) {
+            // to store comments in string
+            List<String> stringlist = new ArrayList<String>();
+
+            // if the reviews is not null
+            if (histories != null && histories.size() > 0) {
+                // set review list
+                activityReference.get().historyList = histories;
+
+                // add author's name and review details to the string list
+                for(int i = 0; i < reviews.size(); i++){
+                    stringlist.add(reviews[i].getAuthor()+"\n"+reviews[i].getReviewDetails());
+                }
+            }
+
+            else{
+                // if the review is null, display no comment
+                stringlist.add("No comment")
+            }
+
+            //display comments in the listview
+            ArrayAdapter adapter= new ArrayAdapter<String>(this, android.R.layout.simple_list_item_1, stringlist);
+            activityReference.get().reviewListView.setAdapter(adapter)
+        }
+
+    }*/
 }

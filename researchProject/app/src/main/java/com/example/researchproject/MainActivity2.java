@@ -65,9 +65,6 @@ public class MainActivity2 extends AppCompatActivity {
     private String text_recognition_output;
     private String SONG_URI;
 
-    // global variables for history
-    Boolean artistbase;
-
     // UI Components
     private TextView showAlbumName;
     private EditText newReview;
@@ -106,13 +103,6 @@ public class MainActivity2 extends AppCompatActivity {
 
         reviewListView = (ListView)findViewById(R.id.reviewlist);
 
-        // get bundle extras
-        Bundle extras = getIntent().getExtras();
-        if (extras == null){
-            return;
-        }
-        artistbase = extras.getBoolean("ifartist");
-
         account = GoogleSignIn.getLastSignedInAccount(this);
 
         // create instance of database
@@ -123,8 +113,7 @@ public class MainActivity2 extends AppCompatActivity {
         new MainActivity2.registerAlbum(MainActivity2.this, album);
 
         // set reviewListView
-        // reviewListView = (ListView) findViewById(R.id.reviewListView);
-        // new retrieveReviews(this).execute();
+        new retrieveReviews(this).execute();
 
         // disable button until the remote spotify api is connected
         btnPlaySong.setEnabled(false);
@@ -178,7 +167,6 @@ public class MainActivity2 extends AppCompatActivity {
             @Override
             public void onClick(View v) {
                 Intent welcome = new Intent(MainActivity2.this, Welcome.class);
-                welcome.putExtra("ifartist",artistbase);
                 startActivity(welcome);
             }
         });
@@ -450,11 +438,28 @@ public class MainActivity2 extends AppCompatActivity {
         // onPostExecute runs on main thread
         @Override
         protected void onPostExecute(List<Review> reviews) {
+            // to store comments in string
+            List<String> stringlist = new ArrayList<String>();
+
+            // if the reviews is not null
             if (reviews != null && reviews.size() > 0) {
                 // set review list
                 activityReference.get().reviewList = reviews;
 
+                // add author's name and review details to the string list
+                for(int i = 0; i < reviews.size(); i++){
+                    stringlist.add(reviews[i].getAuthor()+"\n"+reviews[i].getReviewDetails());
+                }
             }
+
+            else{
+                // if the review is null, display no comment
+                stringlist.add("No comment");
+            }
+
+            //display comments in the listview
+            ArrayAdapter adapter= new ArrayAdapter<String>(this, android.R.layout.simple_list_item_1, stringlist);
+            activityReference.get().reviewListView.setAdapter(adapter);
         }
 
     }

@@ -37,13 +37,6 @@ public class Welcome extends AppCompatActivity {
         newalbum = (Button)findViewById(R.id.get_new_album);
         recomsong = (TextView)findViewById(R.id.recomsong);
 
-        // get bundle extras
-//        Bundle extras = getIntent().getExtras();
-//        if (extras == null){
-//            return;
-//        }
-//        artistbase = extras.getBoolean("ifartist");
-
         //search a new album
         newalbum.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -71,8 +64,6 @@ public class Welcome extends AppCompatActivity {
                 if (songhistory == null) {
                     songhistory = new ArrayList<String>();
                 }
-                history.putExtra("songhistory",songhistory);
-                history.putExtra("ifartist", artistbase);
                 startActivity(history);
             }
         });
