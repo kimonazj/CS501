@@ -452,8 +452,8 @@ public class MainActivity2 extends AppCompatActivity {
             if (reviews != null && reviews.size() > 0) {
                 activityReference.get().reviewList = reviews;
 
-                // set list view here
-                // activityReference.get().reviewListView = ...
+                // set review list here
+                activityReference.get().reviewList = reviews;
 
             }
         }
