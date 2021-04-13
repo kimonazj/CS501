@@ -1,47 +1,115 @@
 <?xml version="1.0" encoding="utf-8"?>
-<RelativeLayout
-    xmlns:android="http://schemas.android.com/apk/res/android"
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:layout_margin="16dp"
+    android:orientation="vertical"
     tools:context=".MainActivity2">
+<!-- MainActivity 2 is player activity -->
 
     <TextView
-        android:id="@+id/welcome"
+        android:id="@+id/player"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="@string/welcome"
-        android:textSize="50sp"
+        android:layout_marginTop="50dp"
         android:layout_centerHorizontal="true"
-        android:layout_marginTop="200dp"/>
+        android:text="My Music Player"
+        android:textStyle="bold"
+        android:textSize="30sp" />
 
-    <Button
-        android:id="@+id/history"
+    <TextView
+        android:id="@+id/select_song"
+        android:layout_below="@+id/player"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="@string/View_history"
-        android:layout_below="@+id/welcome"
-        android:layout_marginTop="100dp"
-        android:layout_marginLeft="50dp"
-        android:onClick="viewHistory"/>
+        android:layout_centerHorizontal="true"
+        android:layout_marginTop="40dp"
+        android:text = "Current Song:"
+        android:textSize="24sp" />
+
+    <TextView
+        android:id="@+id/album_name"
+        android:layout_below="@+id/select_song"
+        android:layout_width="300dp"
+        android:layout_height="80dp"
+        android:layout_marginTop="20dp"
+        android:layout_centerHorizontal="true"
+        android:text = "Welcome to New York \n By Taylor Swift"
+        android:textAlignment="center"
+        android:textSize="20sp" />
 
     <Button
-        android:id="@+id/btnGetSongs"
+        android:id="@+id/btnPlaySong"
+        android:layout_below="@+id/album_name"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="@string/Search"
-        android:layout_below="@+id/welcome"
-        android:layout_marginTop="100dp"
-        android:layout_toRightOf="@+id/history"
-        android:layout_marginLeft="50dp"/>
+        android:layout_marginTop="30dp"
+        android:layout_centerHorizontal="true"
+        android:text="@string/play_music" />
+
+
+    <LinearLayout
+        android:layout_below="@+id/btnPlaySong"
+        android:id = "@+id/diarysection"
+        android:layout_width="wrap_content"
+        android:layout_height="230dp"
+        android:layout_centerHorizontal="true"
+        android:layout_marginTop="30dp"
+        android:orientation="vertical">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal">
+            <TextView
+                android:id="@+id/reviews"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Reviews"
+                android:textSize="20dp" />
+            <Button
+                android:id="@+id/addReview"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginLeft="100dp"
+                android:text="Add Review" />
+
+        </LinearLayout>
+
+
+        <EditText
+            android:id="@+id/newReview"
+            android:layout_width="300dp"
+            android:layout_height="70dp"
+            android:layout_marginTop="5dp"
+            android:hint="Say Something Here"
+            android:textAlignment="viewStart"
+            android:textSize="14dp" />
+
+        <ListView
+            android:id="@+id/reviewlist"
+            android:textSize="14dp"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent" />
+
+    </LinearLayout>
 
     <Button
         android:id="@+id/back"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="@string/back"
         android:layout_alignParentBottom="true"
-        android:onClick="backFunction"
-        />
+        android:text="@string/back" />
+
+    <Button
+        android:id="@+id/get_new_album"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentBottom="true"
+        android:layout_alignParentRight="true"
+        android:text="@string/get_new_pic" />
+
+
 </RelativeLayout>

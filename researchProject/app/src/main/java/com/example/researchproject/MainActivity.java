@@ -1,13 +1,18 @@
 package com.example.researchproject;
 
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.room.Room;
 
 import android.content.Intent;
+import android.os.AsyncTask;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 
+import com.example.researchproject.database.AppDatabase;
+import com.example.researchproject.database.History;
+import com.example.researchproject.database.User;
 import com.google.android.gms.auth.api.signin.GoogleSignIn;
 import com.google.android.gms.auth.api.signin.GoogleSignInAccount;
 import com.google.android.gms.auth.api.signin.GoogleSignInClient;
@@ -16,11 +21,14 @@ import com.google.android.gms.common.SignInButton;
 import com.google.android.gms.common.api.ApiException;
 import com.google.android.gms.tasks.Task;
 
+import java.lang.ref.WeakReference;
+
 public class MainActivity extends AppCompatActivity {
 
     GoogleSignInClient mGoogleSignInClient;
     GoogleSignInOptions gso;
     int RC_SIGN_IN = 1;
+    AppDatabase db;
 
     SignInButton btnSignIn;
 
@@ -47,6 +55,9 @@ public class MainActivity extends AppCompatActivity {
                 signIn();
                 }
         });
+
+        // create instance of database
+        db = Room.databaseBuilder(getApplicationContext(), AppDatabase.class, "project_db").build();
 
     }
     @Override
@@ -82,6 +93,14 @@ public class MainActivity extends AppCompatActivity {
         try {
             GoogleSignInAccount account = completedTask.getResult(ApiException.class);
 
+            // get email as userId
+            String userId = account.getEmail();
+
+            // if userId is not registered in db, registerUser
+
+            User user = new User(userId, account.getDisplayName());
+            new registerUser(MainActivity.this, user).execute();
+
             // Signed in successfully, show authenticated UI.
             updateUI(account);
         } catch (ApiException e) {
@@ -95,9 +114,38 @@ public class MainActivity extends AppCompatActivity {
     public void updateUI(GoogleSignInAccount account) {
         // if user is signed in, navigate to main page
         if (account != null) {
-            Intent intent = new Intent(MainActivity.this, MainActivity2.class);
+            Intent intent = new Intent(MainActivity.this, Welcome.class);
             startActivity(intent);
         }
+    }
+
+    private static class registerUser extends AsyncTask<Void,Void,Boolean> {
+
+        private WeakReference<MainActivity> activityReference;
+        private User user;
+
+        // only retain a weak reference to the activity
+        registerUser(MainActivity context, User user) {
+            activityReference = new WeakReference<>(context);
+            this.user = user;
+        }
+
+        // doInBackground methods runs on a worker thread
+        @Override
+        protected Boolean doInBackground(Void... objs) {
+            // if user doesn't exist, create new user and history
+            if (activityReference.get().db.userDao().findByUserId(user.getUserId()) == null) {
+                activityReference.get().db.userDao().insert(user);
+                activityReference.get().db.historyDao().insert(new History(user.getUserId()));
+            }
+            return true;
+        }
+
+        // onPostExecute runs on main thread
+        @Override
+        protected void onPostExecute(Boolean bool) {
+        }
+
     }
 
 }

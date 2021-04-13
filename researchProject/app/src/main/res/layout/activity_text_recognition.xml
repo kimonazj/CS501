@@ -6,22 +6,15 @@
     android:layout_height="match_parent"
     tools:context=".TextRecognitionActivity">
 
-    <Button
+    <TextView
         android:id="@+id/find"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="@string/Find_pic"
+        android:text="Search for an Album!"
+        android:textStyle="bold"
+        android:textSize="24sp"
         android:layout_marginTop="100dp"
         android:layout_centerHorizontal="true"/>
-
-    <ImageView
-        android:id="@+id/image"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        tools:srcCompat="@tools:sample/avatars"
-        android:layout_centerHorizontal="true"
-        android:layout_below="@+id/find"
-        android:layout_marginTop="70dp"/>
 
 
     <Button
@@ -30,17 +23,18 @@
         android:layout_height="wrap_content"
         android:text="@string/Upload"
         android:layout_centerHorizontal="true"
-        android:layout_below="@+id/image"
+        android:layout_below="@+id/find"
         android:layout_marginTop="70dp"/>
 
     <TextView
         android:id="@+id/searchResult"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
+        android:layout_below="@+id/btnCamera"
+        android:layout_width="300dp"
+        android:layout_height="150dp"
+        android:background="@color/cardview_shadow_end_color"
         android:hint="@string/result"
-        android:textSize="24sp"
+        android:textSize="20sp"
         android:layout_centerHorizontal="true"
-        android:layout_below="@+id/upload"
         android:layout_marginTop="70dp"/>
 
     <Button
@@ -48,7 +42,6 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_alignParentBottom="true"
-        android:onClick="backFunction"
         android:text="@string/back" />
 
 </RelativeLayout>
