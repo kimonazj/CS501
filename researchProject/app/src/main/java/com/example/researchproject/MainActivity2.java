@@ -121,7 +121,7 @@ public class MainActivity2 extends AppCompatActivity {
         // check if album object exists and add new if it doesn't
         Album album = new Album(SONG_URI, album_name, album_artist);
         new MainActivity2.registerAlbum(MainActivity2.this, album);
-        
+
         // set reviewListView
         // reviewListView = (ListView) findViewById(R.id.reviewListView);
         // new retrieveReviews(this).execute();
@@ -451,9 +451,7 @@ public class MainActivity2 extends AppCompatActivity {
         @Override
         protected void onPostExecute(List<Review> reviews) {
             if (reviews != null && reviews.size() > 0) {
-                activityReference.get().reviewList = reviews;
-
-                // set review list here
+                // set review list
                 activityReference.get().reviewList = reviews;
 
             }
