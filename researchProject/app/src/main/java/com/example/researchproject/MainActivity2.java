@@ -118,6 +118,10 @@ public class MainActivity2 extends AppCompatActivity {
         // create instance of database
         db = Room.databaseBuilder(getApplicationContext(), AppDatabase.class, "project_db_v3").build();
 
+        // check if album object exists and add new if it doesn't
+        Album album = new Album(SONG_URI, album_name, album_artist);
+        new MainActivity2.registerAlbum(MainActivity2.this, album);
+        
         // set reviewListView
         // reviewListView = (ListView) findViewById(R.id.reviewListView);
         // new retrieveReviews(this).execute();
@@ -149,9 +153,6 @@ public class MainActivity2 extends AppCompatActivity {
         addReview.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                // check if album object exists and add new if it doesn't
-                Album album = new Album(SONG_URI, album_name, album_artist);
-                new MainActivity2.registerAlbum(MainActivity2.this, album);
 
                 // create new review object
                 Review review = new Review(SONG_URI, account.getDisplayName(), newReview.getText().toString());
