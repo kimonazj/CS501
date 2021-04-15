@@ -1,6 +1,7 @@
 package com.example.researchproject;
 
 import android.content.Intent;
+import android.os.AsyncTask;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.AdapterView;
@@ -17,6 +18,7 @@ import androidx.room.Room;
 import com.example.researchproject.database.AppDatabase;
 import com.example.researchproject.database.HistoryWithAlbums;
 
+import java.lang.ref.WeakReference;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -111,9 +113,9 @@ public class History extends AppCompatActivity {
         });
 
     }
-
+/*
     // TODO: retrieveHistory
-    /*private static class retrieveHistory extends AsyncTask<Void,Void,List<Review>> {
+    private static class retrieveHistory extends AsyncTask<Void,Void,List<HistoryWithAlbums>> {
 
         private WeakReference<History> activityReference;
 
@@ -160,5 +162,6 @@ public class History extends AppCompatActivity {
             activityReference.get().reviewListView.setAdapter(adapter)
         }
 
-    }*/
+    }
+ */
 }

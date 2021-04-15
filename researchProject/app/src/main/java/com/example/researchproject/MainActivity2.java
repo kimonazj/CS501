@@ -84,6 +84,9 @@ public class MainActivity2 extends AppCompatActivity {
     private String album_name;
     private List<Review> reviewList;
 
+    // to store comments in string
+    List<String> stringlist = new ArrayList<String>();
+
     AppDatabase db;
 
     // get signedin user
@@ -114,8 +117,18 @@ public class MainActivity2 extends AppCompatActivity {
         Album album = new Album(SONG_URI, album_name, album_artist);
         new MainActivity2.registerAlbum(MainActivity2.this, album);
 
-        // set reviewListView
+        // get reviews
         new retrieveReviews(this).execute();
+
+        // set reviewListView
+        // add author's name and review details to the string list
+        for(int i = 0; i < reviewList.size(); i++){
+            stringlist.add(reviewList.get(i).getAuthor()+"\n"+ reviewList.get(i).getReviewDetails());
+        }
+
+        //display comments in the listview
+        reviewListView.setAdapter(new ArrayAdapter<String>(this, android.R.layout.simple_list_item_1, stringlist));
+
 
         // disable button until the remote spotify api is connected
         btnPlaySong.setEnabled(false);
@@ -442,28 +455,9 @@ public class MainActivity2 extends AppCompatActivity {
         // onPostExecute runs on main thread
         @Override
         protected void onPostExecute(List<Review> reviews) {
-            // to store comments in string
-            List<String> stringlist = new ArrayList<String>();
 
-            // if the reviews is not null
-            if (reviews != null && reviews.size() > 0) {
-                // set review list
-                activityReference.get().reviewList = reviews;
-
-                // add author's name and review details to the string list
-                for(int i = 0; i < reviews.size(); i++){
-                    stringlist.add(reviews.get(i).getAuthor()+"\n"+ reviews.get(i).getReviewDetails());
-                }
-            }
-
-            else{
-                // if the review is null, display no reviews
-                stringlist.add("No reviews");
-            }
-
-            //display comments in the listview
-            ArrayAdapter adapter= new ArrayAdapter<String>(context, android.R.layout.simple_list_item_1, stringlist);
-            activityReference.get().reviewListView.setAdapter(adapter);
+            // set review list
+            activityReference.get().reviewList = reviews;
         }
 
     }
