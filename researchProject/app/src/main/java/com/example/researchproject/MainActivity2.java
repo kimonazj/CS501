@@ -3,6 +3,7 @@ package com.example.researchproject;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.room.Room;
 
+import android.content.Context;
 import android.content.Intent;
 import android.media.MediaPlayer;
 import android.os.AsyncTask;
@@ -10,6 +11,7 @@ import android.os.Bundle;
 import android.util.Base64;
 import android.util.Log;
 import android.view.View;
+import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ListView;
@@ -106,7 +108,7 @@ public class MainActivity2 extends AppCompatActivity {
         account = GoogleSignIn.getLastSignedInAccount(this);
 
         // create instance of database
-        db = Room.databaseBuilder(getApplicationContext(), AppDatabase.class, "project_db_v3").build();
+        db = Room.databaseBuilder(getApplicationContext(), AppDatabase.class, "project_db_v4").build();
 
         // check if album object exists and add new if it doesn't
         Album album = new Album(SONG_URI, album_name, album_artist);
@@ -418,10 +420,12 @@ public class MainActivity2 extends AppCompatActivity {
     private static class retrieveReviews extends AsyncTask<Void,Void,List<Review>> {
 
         private WeakReference<MainActivity2> activityReference;
+        private Context context;
 
         // only retain a weak reference to the activity
         retrieveReviews(MainActivity2 context) {
             activityReference = new WeakReference<>(context);
+            this.context = context;
         }
 
         // doInBackground methods runs on a worker thread
@@ -448,17 +452,17 @@ public class MainActivity2 extends AppCompatActivity {
 
                 // add author's name and review details to the string list
                 for(int i = 0; i < reviews.size(); i++){
-                    stringlist.add(reviews[i].getAuthor()+"\n"+reviews[i].getReviewDetails());
+                    stringlist.add(reviews.get(i).getAuthor()+"\n"+ reviews.get(i).getReviewDetails());
                 }
             }
 
             else{
-                // if the review is null, display no comment
-                stringlist.add("No comment");
+                // if the review is null, display no reviews
+                stringlist.add("No reviews");
             }
 
             //display comments in the listview
-            ArrayAdapter adapter= new ArrayAdapter<String>(this, android.R.layout.simple_list_item_1, stringlist);
+            ArrayAdapter adapter= new ArrayAdapter<String>(context, android.R.layout.simple_list_item_1, stringlist);
             activityReference.get().reviewListView.setAdapter(adapter);
         }
 

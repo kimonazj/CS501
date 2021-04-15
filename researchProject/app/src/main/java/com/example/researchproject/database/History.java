@@ -16,7 +16,7 @@ public class History {
     @NonNull
     public int historyId;
 
-    @ColumnInfo(name = "userId")
+    @ColumnInfo(name = "userId", index = true)
     public String userId;
 
     public History(String userId) {
