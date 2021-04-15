@@ -3,6 +3,8 @@ package com.example.researchproject;
 import android.content.Intent;
 import android.os.Bundle;
 import android.view.View;
+import android.widget.AdapterView;
+import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.ListView;
 import android.widget.TextView;
@@ -10,8 +12,13 @@ import android.widget.Toast;
 
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.room.Room;
+
+import com.example.researchproject.database.AppDatabase;
+import com.example.researchproject.database.HistoryWithAlbums;
 
 import java.util.ArrayList;
+import java.util.List;
 
 public class History extends AppCompatActivity {
     Button playbtn;
@@ -28,7 +35,8 @@ public class History extends AppCompatActivity {
     AppDatabase db;
     // TODO: get userid
     private String USER_ID;
-    private List<History> historyList;
+    private History history;
+    private List<HistoryWithAlbums> historyList;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -62,7 +70,7 @@ public class History extends AppCompatActivity {
         });
 
         // create instance of database
-        db = Room.databaseBuilder(getApplicationContext(), AppDatabase.class, "project_db_v3").build();
+        db = Room.databaseBuilder(getApplicationContext(), AppDatabase.class, "project_db_v4").build();
 
         // change recommendation preference
         change.setOnClickListener(new View.OnClickListener() {

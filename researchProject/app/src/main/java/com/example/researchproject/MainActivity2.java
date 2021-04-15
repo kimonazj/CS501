@@ -108,7 +108,7 @@ public class MainActivity2 extends AppCompatActivity {
         account = GoogleSignIn.getLastSignedInAccount(this);
 
         // create instance of database
-        db = Room.databaseBuilder(getApplicationContext(), AppDatabase.class, "project_db_v3").build();
+        db = Room.databaseBuilder(getApplicationContext(), AppDatabase.class, "project_db_v4").build();
 
         // check if album object exists and add new if it doesn't
         Album album = new Album(SONG_URI, album_name, album_artist);
@@ -457,8 +457,8 @@ public class MainActivity2 extends AppCompatActivity {
             }
 
             else{
-                // if the review is null, display no comment
-                stringlist.add("No comment");
+                // if the review is null, display no reviews
+                stringlist.add("No reviews");
             }
 
             //display comments in the listview

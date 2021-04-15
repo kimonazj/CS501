@@ -16,7 +16,7 @@ public class Review {
     @NonNull
     public int reviewId;
 
-    @ColumnInfo(name = "songUri")
+    @ColumnInfo(name = "songUri", index = true)
     public String songUri;
 
     @ColumnInfo(name = "author")
