@@ -11,6 +11,7 @@ import android.provider.MediaStore;
 import android.util.Log;
 import android.view.View;
 import android.widget.Button;
+import android.widget.EditText;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
@@ -39,6 +40,9 @@ public class TextRecognitionActivity extends AppCompatActivity {
     TextView resultView;
     Button btnCamera;
     Button back;
+
+    EditText input_album;
+    Button input_search;
     // Boolean artistbase;
 
     @Override
@@ -50,6 +54,10 @@ public class TextRecognitionActivity extends AppCompatActivity {
         btnCamera = (Button) findViewById(R.id.btnCamera);
         resultView = (TextView) findViewById(R.id.searchResult);
         back = (Button)findViewById(R.id.back);
+        input_search = (Button)findViewById(R.id.stringbtn);
+
+        // the user can type the album's name if he knows the language
+        input_album = (EditText)findViewById(R.id.albumstring);
 
         btnCamera.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -64,6 +72,16 @@ public class TextRecognitionActivity extends AppCompatActivity {
             public void onClick(View v) {
                 Intent welcome = new Intent(TextRecognitionActivity.this, Welcome.class);
                 startActivity(welcome);
+            }
+        });
+
+        input_search.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                // Pass input text to MainActivity2 (for Spotify API)
+                Intent intent = new Intent(TextRecognitionActivity.this, MainActivity2.class);
+                intent.putExtra("textOutput", input_album.getText().toString());
+                startActivity(intent);
             }
         });
 
@@ -120,7 +138,7 @@ public class TextRecognitionActivity extends AppCompatActivity {
                                                     public void onFailure(@NonNull Exception e) {
                                                         // Model couldn’t be loaded or other internal error.
                                                         // ...
-                                                        Toast.makeText(getApplicationContext(),"on failure",Toast.LENGTH_SHORT).show();
+                                                        Toast.makeText(getApplicationContext(),"on failure of recognizing the text's lanugage",Toast.LENGTH_SHORT).show();
                                                     }
                                                 });
 
