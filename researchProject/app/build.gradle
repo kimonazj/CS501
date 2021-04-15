@@ -63,4 +63,7 @@ dependencies {
     // add dependency for android debug database library
     debugImplementation 'com.amitshekhar.android:debug-db:1.0.6'
 
+    // add dependency for ml kit language recognizer
+    implementation 'com.google.mlkit:language-id:16.1.1'
+
 }
