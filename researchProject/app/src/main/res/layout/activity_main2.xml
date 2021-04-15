@@ -7,17 +7,17 @@
     android:layout_margin="16dp"
     android:orientation="vertical"
     tools:context=".MainActivity2">
-<!-- MainActivity 2 is player activity -->
+    <!-- MainActivity 2 is player activity -->
 
     <TextView
         android:id="@+id/player"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginTop="50dp"
+        android:layout_marginTop="10dp"
         android:layout_centerHorizontal="true"
         android:text="My Music Player"
         android:textStyle="bold"
-        android:textSize="30sp" />
+        android:textSize="24sp" />
 
     <TextView
         android:id="@+id/select_song"
@@ -25,27 +25,27 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_centerHorizontal="true"
-        android:layout_marginTop="40dp"
+        android:layout_marginTop="10dp"
         android:text = "Current Song:"
-        android:textSize="24sp" />
+        android:textSize="18sp" />
 
     <TextView
         android:id="@+id/album_name"
         android:layout_below="@+id/select_song"
         android:layout_width="300dp"
         android:layout_height="80dp"
-        android:layout_marginTop="20dp"
+        android:layout_marginTop="10dp"
         android:layout_centerHorizontal="true"
         android:text = "Welcome to New York \n By Taylor Swift"
         android:textAlignment="center"
-        android:textSize="20sp" />
+        android:textSize="15sp" />
 
     <Button
         android:id="@+id/btnPlaySong"
         android:layout_below="@+id/album_name"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginTop="30dp"
+        android:layout_marginTop="10dp"
         android:layout_centerHorizontal="true"
         android:text="@string/play_music" />
 
@@ -54,9 +54,9 @@
         android:layout_below="@+id/btnPlaySong"
         android:id = "@+id/diarysection"
         android:layout_width="wrap_content"
-        android:layout_height="230dp"
+        android:layout_height="200dp"
         android:layout_centerHorizontal="true"
-        android:layout_marginTop="30dp"
+        android:layout_marginTop="10dp"
         android:orientation="vertical">
 
         <LinearLayout
@@ -68,7 +68,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="Reviews"
-                android:textSize="20dp" />
+                android:textSize="18sp" />
             <Button
                 android:id="@+id/addReview"
                 android:layout_width="wrap_content"

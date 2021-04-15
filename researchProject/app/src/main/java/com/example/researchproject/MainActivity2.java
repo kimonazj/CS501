@@ -120,6 +120,10 @@ public class MainActivity2 extends AppCompatActivity {
         // get reviews
         new retrieveReviews(this).execute();
 
+        if (reviewList == null) {
+            reviewList = new ArrayList<Review>();
+        }
+
         // set reviewListView
         // add author's name and review details to the string list
         for(int i = 0; i < reviewList.size(); i++){
