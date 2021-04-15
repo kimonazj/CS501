@@ -13,6 +13,9 @@ import android.view.View;
 import android.widget.Button;
 import android.widget.TextView;
 
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
+
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.gms.tasks.Task;
@@ -20,6 +23,9 @@ import com.google.mlkit.vision.common.InputImage;
 import com.google.mlkit.vision.text.Text;
 import com.google.mlkit.vision.text.TextRecognition;
 import com.google.mlkit.vision.text.TextRecognizer;
+import com.google.mlkit.nl.languageid.LanguageIdentification;
+import com.google.mlkit.nl.languageid.LanguageIdentifier;
+import android.widget.Toast;
 
 public class TextRecognitionActivity extends AppCompatActivity {
 
@@ -93,6 +99,30 @@ public class TextRecognitionActivity extends AppCompatActivity {
                             public void onSuccess(Text visionText) {
                                 // process the text block
                                 search = processTextBlock(visionText);
+
+                                // tell the user what lanugage is on the album
+                                LanguageIdentifier languageIdentifier = LanguageIdentification.getClient();
+                                languageIdentifier.identifyLanguage(search)
+                                        .addOnSuccessListener(
+                                                new OnSuccessListener<String>() {
+                                                    //@Override
+                                                    public void onSuccess(@Nullable String languageCode) {
+                                                        if (languageCode.equals("und")) {
+                                                            Toast.makeText(getApplicationContext(),"can't identify language.",Toast.LENGTH_SHORT).show();
+                                                        } else {
+                                                            Toast.makeText(getApplicationContext(),"Language: " + languageCode,Toast.LENGTH_SHORT).show();
+                                                        }
+                                                    }
+                                                })
+                                        .addOnFailureListener(
+                                                new OnFailureListener() {
+                                                    @Override
+                                                    public void onFailure(@NonNull Exception e) {
+                                                        // Model couldn’t be loaded or other internal error.
+                                                        // ...
+                                                        Toast.makeText(getApplicationContext(),"on failure",Toast.LENGTH_SHORT).show();
+                                                    }
+                                                });
 
                                 // set result of processing to resultView
                                 resultView.setText(search);
