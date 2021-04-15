@@ -164,6 +164,16 @@ public class MainActivity2 extends AppCompatActivity {
 
                 // set list of reviews with new review
                 new retrieveReviews(MainActivity2.this).execute();
+
+                // set reviewListView
+                // add author's name and review details to the string list
+                for(int i = 0; i < reviewList.size(); i++){
+                    stringlist.add(reviewList.get(i).getAuthor()+"\n"+ reviewList.get(i).getReviewDetails());
+                }
+
+                //display comments in the listview
+                reviewListView.setAdapter(new ArrayAdapter<String>(MainActivity2.this, android.R.layout.simple_list_item_1, stringlist));
+
             }
         });
 
