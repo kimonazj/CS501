@@ -8,6 +8,8 @@ import android.content.Intent;
 import android.media.MediaPlayer;
 import android.os.AsyncTask;
 import android.os.Bundle;
+import android.os.Handler;
+import android.os.Looper;
 import android.util.Base64;
 import android.util.Log;
 import android.view.View;
@@ -90,6 +92,8 @@ public class MainActivity2 extends AppCompatActivity {
     // to store comments in string
     List<String> stringlist = new ArrayList<String>();
 
+    Handler handler;
+
     AppDatabase db;
 
     // get signedin user
@@ -112,6 +116,8 @@ public class MainActivity2 extends AppCompatActivity {
         reviewListView = (ListView)findViewById(R.id.reviewlist);
 
         account = GoogleSignIn.getLastSignedInAccount(this);
+
+        handler = new Handler(Looper.getMainLooper());
 
         // create instance of database
         db = Room.databaseBuilder(getApplicationContext(), AppDatabase.class, "project_db_v4").allowMainThreadQueries().build();
@@ -149,7 +155,7 @@ public class MainActivity2 extends AppCompatActivity {
                 Review review = new Review(SONG_URI, account.getDisplayName(), newReview.getText().toString());
                 //Review review = new Review("example", account.getDisplayName(), newReview.getText().toString());
                 new registerReview(MainActivity2.this, review).execute();
-                
+
                 // set reviewListView
                 // add author's name and review details to the string list
                 stringlist.add(review.getAuthor()+"\n"+ review.getReviewDetails());
@@ -188,7 +194,7 @@ public class MainActivity2 extends AppCompatActivity {
         setTextRecognitionOutPut();
 
         // begin our sequence of API calls, starting with our call for an access token.
-        getAccessToken();
+        startAlbumSearch();
 
         // create connection parameters to use when we connect to the SpotifyAppRemote object
         ConnectionParams connectionParams = new ConnectionParams.Builder(CLIENT_ID)
@@ -228,6 +234,28 @@ public class MainActivity2 extends AppCompatActivity {
         // into our global variable
         Intent intent = getIntent();
         text_recognition_output = intent.getStringExtra("textOutput");
+    }
+
+    private void startAlbumSearch() {
+        getAccessToken();
+    }
+
+    private void setReviewListView(List<Review> reviewList) {
+
+        this.reviewList = reviewList;
+
+        if (reviewList == null) {
+            reviewList = new ArrayList<Review>();
+        }
+
+        // set reviewListView
+        // add author's name and review details to the string list
+        for(int i = 0; i < reviewList.size(); i++){
+            stringlist.add(reviewList.get(i).getAuthor()+"\n"+ reviewList.get(i).getReviewDetails());
+        }
+
+        //display comments in the listview
+        reviewListView.setAdapter(new ArrayAdapter<String>(this, android.R.layout.simple_list_item_1, stringlist));
     }
 
     private void getAccessToken() {
@@ -354,7 +382,7 @@ public class MainActivity2 extends AppCompatActivity {
                 // add this new album to our database
                 //Album album = new Album("example", "exampleagain", "wowexample");
                 Album album = new Album(SONG_URI, album_name, album_artist);
-                new MainActivity2.registerAlbum(MainActivity2.this, album);
+                new registerAlbum(MainActivity2.this, album).execute();
 
 
                 // TODO: add album to history
@@ -362,19 +390,6 @@ public class MainActivity2 extends AppCompatActivity {
 
                 // get reviews
                 new retrieveReviews(this).execute();
-
-                if (reviewList == null) {
-                    reviewList = new ArrayList<Review>();
-                }
-
-                // set reviewListView
-                // add author's name and review details to the string list
-                for(int i = 0; i < reviewList.size(); i++){
-                    stringlist.add(reviewList.get(i).getAuthor()+"\n"+ reviewList.get(i).getReviewDetails());
-                }
-
-                //display comments in the listview
-                reviewListView.setAdapter(new ArrayAdapter<String>(this, android.R.layout.simple_list_item_1, stringlist));
 
             } catch (JSONException e) {
                 e.printStackTrace();
@@ -499,7 +514,16 @@ public class MainActivity2 extends AppCompatActivity {
                 if (activityReference.get() != null) {
                     Log.d("MainActivity2", "doInBackground for retrieveReview");
 
-                    return activityReference.get().db.reviewDao().findBySongUri(activityReference.get().SONG_URI);
+                    List<Review> retrievedReviews = activityReference.get().db.reviewDao().findBySongUri(activityReference.get().SONG_URI);
+
+                    activityReference.get().handler.post(new Runnable() {
+                        @Override
+                        public void run() {
+                            activityReference.get().setReviewListView(retrievedReviews);
+                        }
+                    });
+
+                    return retrievedReviews;
                 }
                 else {
                     //Toast.makeText(context, "Review is Null", Toast.LENGTH_SHORT);
