@@ -15,8 +15,11 @@ import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.room.Room;
 
+import com.example.researchproject.database.Album;
 import com.example.researchproject.database.AppDatabase;
 import com.example.researchproject.database.HistoryWithAlbums;
+import com.google.android.gms.auth.api.signin.GoogleSignIn;
+import com.google.android.gms.auth.api.signin.GoogleSignInAccount;
 
 import java.lang.ref.WeakReference;
 import java.util.ArrayList;
@@ -31,19 +34,23 @@ public class History extends AppCompatActivity {
     TextView preferencetv;
     ListView listview;
 
-
     String selectedsong;
 
     AppDatabase db;
-    // TODO: get userid
-    private String USER_ID;
-    private History history;
-    private List<HistoryWithAlbums> historyList;
+    // get signedin user
+    GoogleSignInAccount account;
+
+    private HistoryWithAlbums historyWithAlbums;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.history);
+
+        // create instance of database
+        db = Room.databaseBuilder(getApplicationContext(), AppDatabase.class, "project_db_v4").allowMainThreadQueries().build();
+
+        account = GoogleSignIn.getLastSignedInAccount(this);
 
         // initiate buttons
         playbtn = findViewById(R.id.playsong);
@@ -55,11 +62,18 @@ public class History extends AppCompatActivity {
 
         // TODO: change this working with database
         songhistory = new ArrayList<String>();
-        if(songhistory == null || songhistory.size() == 0){
-            //if there is no history, display the default welcome song
-            songhistory.add("Welcome to NewYork");
-            songhistory.add("No More");
+
+        new History.retrieveHistory(History.this, account.getEmail()).execute();
+
+        if (historyWithAlbums == null) {
+            songhistory.add("Welcome to New York");
         }
+        else {
+            for (Album album : historyWithAlbums.albums) {
+                songhistory.add(album.getAlbumName()+"\n"+ album.getArtistName());
+            }
+        }
+
         //display song history in the listview
         ArrayAdapter adapter= new ArrayAdapter<String>(this, android.R.layout.simple_list_item_1, songhistory);
         listview.setAdapter(adapter);
@@ -70,9 +84,6 @@ public class History extends AppCompatActivity {
                 selectedsong = String.valueOf(parent.getItemAtPosition(position));
             }
         });
-
-        // create instance of database
-        db = Room.databaseBuilder(getApplicationContext(), AppDatabase.class, "project_db_v4").allowMainThreadQueries().build();
 
         // change recommendation preference
         change.setOnClickListener(new View.OnClickListener() {
@@ -113,57 +124,34 @@ public class History extends AppCompatActivity {
         });
 
     }
-/*
+
     // TODO: retrieveHistory
-    private static class retrieveHistory extends AsyncTask<Void,Void,List<HistoryWithAlbums>> {
+    private static class retrieveHistory extends AsyncTask<Void,Void,HistoryWithAlbums> {
 
         private WeakReference<History> activityReference;
+        String userId;
 
         // only retain a weak reference to the activity
-        retrieveReviews(History context) {
+        retrieveHistory(History context, String userId) {
             activityReference = new WeakReference<>(context);
+            this.userId = userId;
         }
 
         // doInBackground methods runs on a worker thread
         @Override
-        protected List<History> doInBackground(Void... objs) {
-            if (activityReference.get() != null) {
-                return activityReference.get().db.historyDao().findByUserId(activityReference.get().USER_ID);
-            }
-            else {
-                return null;
-            }
+        protected HistoryWithAlbums doInBackground(Void... objs) {
+            HistoryWithAlbums historyWithAlbums = activityReference.get().db.historyWithAlbumsDao().getHistoryWithAlbums(userId);
+            return historyWithAlbums;
         }
 
         // onPostExecute runs on main thread
         @Override
-        protected void onPostExecute(List<History> histories) {
-            // to store comments in string
-            List<String> stringlist = new ArrayList<String>();
-
-            // if the reviews is not null
-            if (histories != null && histories.size() > 0) {
-                // set review list
-                activityReference.get().historyList = histories;
-
-                // add author's name and review details to the string list
-                for(int i = 0; i < reviews.size(); i++){
-                    stringlist.add(reviews[i].getAuthor()+"\n"+reviews[i].getReviewDetails());
-                }
-            }
-
-            else{
-                // if the review is null, display no comment
-                stringlist.add("No comment")
-            }
-
-            //display comments in the listview
-            ArrayAdapter adapter= new ArrayAdapter<String>(this, android.R.layout.simple_list_item_1, stringlist);
-            activityReference.get().reviewListView.setAdapter(adapter)
+        protected void onPostExecute(HistoryWithAlbums historyWithAlbums) {
+            activityReference.get().historyWithAlbums = historyWithAlbums;
         }
 
     }
 
- */
+
  
 }
