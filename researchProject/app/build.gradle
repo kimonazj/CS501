@@ -66,4 +66,6 @@ dependencies {
     // add dependency for ml kit language recognizer
     implementation 'com.google.mlkit:language-id:16.1.1'
 
+    // 'com.google.firebase:firebase-ml-natural-language-translate-model:19.0.0'
+
 }

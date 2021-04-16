@@ -86,13 +86,13 @@
             android:layout_marginTop="5dp"
             android:hint="Say Something Here"
             android:textAlignment="viewStart"
-            android:textSize="14dp" />
+            android:textSize="14sp" />
 
         <ListView
             android:id="@+id/reviewlist"
-            android:textSize="14dp"
+            android:textSize="14sp"
             android:layout_width="match_parent"
-            android:layout_height="match_parent" />
+            android:layout_height="100dp" />
 
     </LinearLayout>
 

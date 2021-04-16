@@ -16,6 +16,7 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ListView;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.android.volley.AuthFailureError;
 import com.android.volley.Request;
@@ -28,6 +29,7 @@ import com.example.researchproject.database.Album;
 import com.example.researchproject.database.AppDatabase;
 import com.example.researchproject.database.History;
 import com.example.researchproject.database.Review;
+import com.example.researchproject.database.ReviewDao;
 import com.example.researchproject.database.User;
 import com.google.android.gms.auth.api.signin.GoogleSignIn;
 import com.google.android.gms.auth.api.signin.GoogleSignInAccount;
@@ -164,16 +166,14 @@ public class MainActivity2 extends AppCompatActivity {
 
                 // create new review object
                 Review review = new Review(SONG_URI, account.getDisplayName(), newReview.getText().toString());
-                new MainActivity2.registerReview(MainActivity2.this, review);
+                new MainActivity2.registerReview(MainActivity2.this, review).execute();
 
                 // set list of reviews with new review
                 new retrieveReviews(MainActivity2.this).execute();
 
                 // set reviewListView
                 // add author's name and review details to the string list
-                for(int i = 0; i < reviewList.size(); i++){
-                    stringlist.add(reviewList.get(i).getAuthor()+"\n"+ reviewList.get(i).getReviewDetails());
-                }
+                stringlist.add(review.getAuthor()+"\n"+ review.getReviewDetails());
 
                 //display comments in the listview
                 reviewListView.setAdapter(new ArrayAdapter<String>(MainActivity2.this, android.R.layout.simple_list_item_1, stringlist));
@@ -433,8 +433,14 @@ public class MainActivity2 extends AppCompatActivity {
         // doInBackground methods runs on a worker thread
         @Override
         protected Boolean doInBackground(Void... objs) {
-            activityReference.get().db.reviewDao().insert(review);
-            return true;
+            try {
+                ReviewDao reviewDao = activityReference.get().db.reviewDao();
+                reviewDao.insert(review);
+                return true;
+            } catch (Exception e) {
+                Log.d("MainActivity2", "Encountered following Error in registerView: " + e);
+                return null;
+            }
         }
 
         // onPostExecute runs on main thread
@@ -458,10 +464,18 @@ public class MainActivity2 extends AppCompatActivity {
         // doInBackground methods runs on a worker thread
         @Override
         protected List<Review> doInBackground(Void... objs) {
-            if (activityReference.get() != null) {
-                return activityReference.get().db.reviewDao().findBySongUri(activityReference.get().SONG_URI);
-            }
-            else {
+            try {
+                if (activityReference.get() != null) {
+                    Log.d("MainActivity2", "doInBackground for retrieveReview");
+
+                    return activityReference.get().db.reviewDao().findBySongUri(activityReference.get().SONG_URI);
+                }
+                else {
+                    Toast.makeText(context, "Review is Null", Toast.LENGTH_SHORT);
+                    return null;
+                }
+            } catch (Exception e) {
+                Log.d("MainActivity2", "Encountered following Error in retrieveReview: " + e);
                 return null;
             }
         }
@@ -471,6 +485,7 @@ public class MainActivity2 extends AppCompatActivity {
         protected void onPostExecute(List<Review> reviews) {
 
             // set review list
+            Log.d("MainActivity2", "Review has been retrieved");
             activityReference.get().reviewList = reviews;
         }
 
