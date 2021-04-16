@@ -12,6 +12,8 @@ import android.widget.Button;
 
 import com.example.researchproject.database.AppDatabase;
 import com.example.researchproject.database.History;
+import com.example.researchproject.database.HistoryAlbumCrossRef;
+import com.example.researchproject.database.HistoryWithAlbums;
 import com.example.researchproject.database.User;
 import com.google.android.gms.auth.api.signin.GoogleSignIn;
 import com.google.android.gms.auth.api.signin.GoogleSignInAccount;
@@ -22,6 +24,7 @@ import com.google.android.gms.common.api.ApiException;
 import com.google.android.gms.tasks.Task;
 
 import java.lang.ref.WeakReference;
+import java.util.ArrayList;
 
 public class MainActivity extends AppCompatActivity {
 
@@ -136,7 +139,8 @@ public class MainActivity extends AppCompatActivity {
             // if user doesn't exist, create new user and history
             if (activityReference.get().db.userDao().findByUserId(user.getUserId()) == null) {
                 activityReference.get().db.userDao().insert(user);
-                activityReference.get().db.historyDao().insert(new History(user.getUserId()));
+                History history = new History(user.getUserId());
+                activityReference.get().db.historyDao().insert(history);
             }
             return true;
         }
