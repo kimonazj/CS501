@@ -115,10 +115,6 @@ public class MainActivity2 extends AppCompatActivity {
         // create instance of database
         db = Room.databaseBuilder(getApplicationContext(), AppDatabase.class, "project_db_v4").build();
 
-        // check if album object exists and add new if it doesn't
-        Album album = new Album(SONG_URI, album_name, album_artist);
-        new MainActivity2.registerAlbum(MainActivity2.this, album);
-
         // get reviews
         new retrieveReviews(this).execute();
 
@@ -166,7 +162,7 @@ public class MainActivity2 extends AppCompatActivity {
 
                 // create new review object
                 Review review = new Review(SONG_URI, account.getDisplayName(), newReview.getText().toString());
-                new MainActivity2.registerReview(MainActivity2.this, review).execute();
+                new registerReview(MainActivity2.this, review).execute();
 
                 // set list of reviews with new review
                 new retrieveReviews(MainActivity2.this).execute();
@@ -371,6 +367,10 @@ public class MainActivity2 extends AppCompatActivity {
                 JSONObject first_track = track_list.getJSONObject(0);
                 String received_uri = first_track.getString("uri");
                 SONG_URI = received_uri;
+
+                // add this new album to our database
+                Album album = new Album(SONG_URI, album_name, album_artist);
+                new MainActivity2.registerAlbum(MainActivity2.this, album);
             } catch (JSONException e) {
                 e.printStackTrace();
             }
