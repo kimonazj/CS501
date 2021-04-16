@@ -11,7 +11,7 @@ import java.util.List;
 public interface HistoryWithAlbumsDao {
     @Transaction
     @Query("SELECT * FROM history WHERE userId = :userId")
-    List<HistoryWithAlbums> getHistoryWithAlbums(String userId);
+    HistoryWithAlbums getHistoryWithAlbums(String userId);
 
     @Insert
     void insert(HistoryAlbumCrossRef albums);

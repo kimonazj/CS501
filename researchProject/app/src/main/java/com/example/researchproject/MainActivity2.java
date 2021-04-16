@@ -31,6 +31,7 @@ import com.example.researchproject.database.Album;
 import com.example.researchproject.database.AppDatabase;
 import com.example.researchproject.database.History;
 import com.example.researchproject.database.HistoryAlbumCrossRef;
+import com.example.researchproject.database.HistoryWithAlbums;
 import com.example.researchproject.database.Review;
 import com.example.researchproject.database.ReviewDao;
 import com.example.researchproject.database.User;
@@ -387,6 +388,7 @@ public class MainActivity2 extends AppCompatActivity {
 
                 // TODO: add album to history
                 // registerAlbumToHistory
+                new MainActivity2.registerAlbumToHistory(MainActivity2.this, account.getEmail()).execute();
 
                 // get reviews
                 new retrieveReviews(this).execute();
@@ -473,21 +475,20 @@ public class MainActivity2 extends AppCompatActivity {
     private static class registerAlbumToHistory extends AsyncTask<Void,Void,Boolean> {
 
         private WeakReference<MainActivity2> activityReference;
-        private Album album;
+        private String userId;
 
         // only retain a weak reference to the activity
-        registerAlbumToHistory(MainActivity2 context, Album album) {
+        registerAlbumToHistory(MainActivity2 context, String userId) {
             activityReference = new WeakReference<>(context);
-            this.album = album;
+            this.userId = userId;
         }
 
         // doInBackground methods runs on a worker thread
         @Override
         protected Boolean doInBackground(Void... objs) {
-            // if album doesn't exist, create new album
-            if (activityReference.get().db.albumDao().findBySongUri(album.getSongUri()) == null) {
-                activityReference.get().db.albumDao().insert(album);
-            }
+
+            History history = activityReference.get().db.historyDao().findByUserId(userId);
+            activityReference.get().db.historyWithAlbumsDao().insert(new HistoryAlbumCrossRef(history.historyId, activityReference.get().SONG_URI));
             return true;
         }
 
