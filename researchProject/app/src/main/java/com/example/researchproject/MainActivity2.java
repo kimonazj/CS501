@@ -146,8 +146,8 @@ public class MainActivity2 extends AppCompatActivity {
             public void onClick(View v) {
 
                 // create new review object
-                //Review review = new Review(SONG_URI, account.getDisplayName(), newReview.getText().toString());
-                Review review = new Review("example", account.getDisplayName(), newReview.getText().toString());
+                Review review = new Review(SONG_URI, account.getDisplayName(), newReview.getText().toString());
+                //Review review = new Review("example", account.getDisplayName(), newReview.getText().toString());
                 new registerReview(MainActivity2.this, review).execute();
                 
                 // set reviewListView
@@ -352,8 +352,8 @@ public class MainActivity2 extends AppCompatActivity {
                 SONG_URI = received_uri;
 
                 // add this new album to our database
-                Album album = new Album("example", "exampleagain", "wowexample");
-                //Album album = new Album(SONG_URI, album_name, album_artist);
+                //Album album = new Album("example", "exampleagain", "wowexample");
+                Album album = new Album(SONG_URI, album_name, album_artist);
                 new MainActivity2.registerAlbum(MainActivity2.this, album);
 
 
