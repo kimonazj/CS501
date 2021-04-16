@@ -11,4 +11,9 @@ public class HistoryAlbumCrossRef {
     @NonNull
     public String songUri;
 
+    public HistoryAlbumCrossRef(int historyId, String songUri) {
+        this.historyId = historyId;
+        this.songUri = songUri;
+    }
+
 }

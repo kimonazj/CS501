@@ -28,6 +28,7 @@ import com.android.volley.toolbox.Volley;
 import com.example.researchproject.database.Album;
 import com.example.researchproject.database.AppDatabase;
 import com.example.researchproject.database.History;
+import com.example.researchproject.database.HistoryAlbumCrossRef;
 import com.example.researchproject.database.Review;
 import com.example.researchproject.database.ReviewDao;
 import com.example.researchproject.database.User;
@@ -113,23 +114,7 @@ public class MainActivity2 extends AppCompatActivity {
         account = GoogleSignIn.getLastSignedInAccount(this);
 
         // create instance of database
-        db = Room.databaseBuilder(getApplicationContext(), AppDatabase.class, "project_db_v4").build();
-
-        // get reviews
-        new retrieveReviews(this).execute();
-
-        if (reviewList == null) {
-            reviewList = new ArrayList<Review>();
-        }
-
-        // set reviewListView
-        // add author's name and review details to the string list
-        for(int i = 0; i < reviewList.size(); i++){
-            stringlist.add(reviewList.get(i).getAuthor()+"\n"+ reviewList.get(i).getReviewDetails());
-        }
-
-        //display comments in the listview
-        reviewListView.setAdapter(new ArrayAdapter<String>(this, android.R.layout.simple_list_item_1, stringlist));
+        db = Room.databaseBuilder(getApplicationContext(), AppDatabase.class, "project_db_v4").allowMainThreadQueries().build();
 
 
         // disable button until the remote spotify api is connected
@@ -161,12 +146,10 @@ public class MainActivity2 extends AppCompatActivity {
             public void onClick(View v) {
 
                 // create new review object
-                Review review = new Review(SONG_URI, account.getDisplayName(), newReview.getText().toString());
+                //Review review = new Review(SONG_URI, account.getDisplayName(), newReview.getText().toString());
+                Review review = new Review("example", account.getDisplayName(), newReview.getText().toString());
                 new registerReview(MainActivity2.this, review).execute();
-
-                // set list of reviews with new review
-                new retrieveReviews(MainActivity2.this).execute();
-
+                
                 // set reviewListView
                 // add author's name and review details to the string list
                 stringlist.add(review.getAuthor()+"\n"+ review.getReviewDetails());
@@ -369,8 +352,30 @@ public class MainActivity2 extends AppCompatActivity {
                 SONG_URI = received_uri;
 
                 // add this new album to our database
-                Album album = new Album(SONG_URI, album_name, album_artist);
+                Album album = new Album("example", "exampleagain", "wowexample");
+                //Album album = new Album(SONG_URI, album_name, album_artist);
                 new MainActivity2.registerAlbum(MainActivity2.this, album);
+
+
+                // TODO: add album to history
+                // registerAlbumToHistory
+
+                // get reviews
+                new retrieveReviews(this).execute();
+
+                if (reviewList == null) {
+                    reviewList = new ArrayList<Review>();
+                }
+
+                // set reviewListView
+                // add author's name and review details to the string list
+                for(int i = 0; i < reviewList.size(); i++){
+                    stringlist.add(reviewList.get(i).getAuthor()+"\n"+ reviewList.get(i).getReviewDetails());
+                }
+
+                //display comments in the listview
+                reviewListView.setAdapter(new ArrayAdapter<String>(this, android.R.layout.simple_list_item_1, stringlist));
+
             } catch (JSONException e) {
                 e.printStackTrace();
             }
@@ -450,15 +455,41 @@ public class MainActivity2 extends AppCompatActivity {
 
     }
 
+    private static class registerAlbumToHistory extends AsyncTask<Void,Void,Boolean> {
+
+        private WeakReference<MainActivity2> activityReference;
+        private Album album;
+
+        // only retain a weak reference to the activity
+        registerAlbumToHistory(MainActivity2 context, Album album) {
+            activityReference = new WeakReference<>(context);
+            this.album = album;
+        }
+
+        // doInBackground methods runs on a worker thread
+        @Override
+        protected Boolean doInBackground(Void... objs) {
+            // if album doesn't exist, create new album
+            if (activityReference.get().db.albumDao().findBySongUri(album.getSongUri()) == null) {
+                activityReference.get().db.albumDao().insert(album);
+            }
+            return true;
+        }
+
+        // onPostExecute runs on main thread
+        @Override
+        protected void onPostExecute(Boolean bool) {
+        }
+
+    }
+
     private static class retrieveReviews extends AsyncTask<Void,Void,List<Review>> {
 
         private WeakReference<MainActivity2> activityReference;
-        private Context context;
 
         // only retain a weak reference to the activity
         retrieveReviews(MainActivity2 context) {
             activityReference = new WeakReference<>(context);
-            this.context = context;
         }
 
         // doInBackground methods runs on a worker thread
@@ -471,7 +502,7 @@ public class MainActivity2 extends AppCompatActivity {
                     return activityReference.get().db.reviewDao().findBySongUri(activityReference.get().SONG_URI);
                 }
                 else {
-                    Toast.makeText(context, "Review is Null", Toast.LENGTH_SHORT);
+                    //Toast.makeText(context, "Review is Null", Toast.LENGTH_SHORT);
                     return null;
                 }
             } catch (Exception e) {

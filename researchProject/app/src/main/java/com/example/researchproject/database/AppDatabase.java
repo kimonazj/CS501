@@ -11,4 +11,6 @@ public abstract class AppDatabase extends RoomDatabase {
     public abstract HistoryDao historyDao();
     public abstract AlbumDao albumDao();
     public abstract ReviewDao reviewDao();
+    public abstract HistoryAlbumCrossRefDao historyAlbumCrossRefDao();
+    public abstract HistoryWithAlbumsDao historyWithAlbumsDao();
 }

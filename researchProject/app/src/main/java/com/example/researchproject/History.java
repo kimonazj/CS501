@@ -72,7 +72,7 @@ public class History extends AppCompatActivity {
         });
 
         // create instance of database
-        db = Room.databaseBuilder(getApplicationContext(), AppDatabase.class, "project_db_v4").build();
+        db = Room.databaseBuilder(getApplicationContext(), AppDatabase.class, "project_db_v4").allowMainThreadQueries().build();
 
         // change recommendation preference
         change.setOnClickListener(new View.OnClickListener() {
@@ -163,5 +163,7 @@ public class History extends AppCompatActivity {
         }
 
     }
+
  */
+ 
 }
