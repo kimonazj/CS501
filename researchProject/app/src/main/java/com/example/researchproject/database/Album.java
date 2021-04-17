@@ -14,12 +14,16 @@ public class Album {
     @ColumnInfo(name = "album_nm")
     private String albumName;
 
+    @ColumnInfo(name = "song_nm")
+    private String songName;
+
     @ColumnInfo(name = "artist_nm")
     private String artistName;
 
-    public Album(String songUri, String albumName, String artistName) {
+    public Album(String songUri, String albumName, String songName, String artistName) {
         this.songUri = songUri;
         this.albumName = albumName;
+        this.songName = songName;
         this.artistName = artistName;
     }
 
@@ -30,6 +34,8 @@ public class Album {
     public String getAlbumName() {
         return albumName;
     }
+
+    public String getSongName() { return songName; }
 
     public String getArtistName() { return artistName; }
 }

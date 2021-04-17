@@ -72,6 +72,7 @@ public class MainActivity2 extends AppCompatActivity {
     private String access_token;
     private String text_recognition_output;
     private String SONG_URI;
+    private String SONG_NAME;
 
     // UI Components
     private TextView showAlbumName;
@@ -121,7 +122,7 @@ public class MainActivity2 extends AppCompatActivity {
         handler = new Handler(Looper.getMainLooper());
 
         // create instance of database
-        db = Room.databaseBuilder(getApplicationContext(), AppDatabase.class, "project_db_v4").allowMainThreadQueries().build();
+        db = Room.databaseBuilder(getApplicationContext(), AppDatabase.class, "project_db_v5").allowMainThreadQueries().build();
 
 
         // disable button until the remote spotify api is connected
@@ -378,15 +379,19 @@ public class MainActivity2 extends AppCompatActivity {
                 JSONArray track_list = response.getJSONArray("items");
                 JSONObject first_track = track_list.getJSONObject(0);
                 String received_uri = first_track.getString("uri");
+
+                // get song name
+                String song_name = first_track.getString("name");
+                SONG_NAME = song_name;
                 SONG_URI = received_uri;
 
                 // add this new album to our database
                 //Album album = new Album("example", "exampleagain", "wowexample");
-                Album album = new Album(SONG_URI, album_name, album_artist);
+                Album album = new Album(SONG_URI, album_name, SONG_NAME, album_artist);
                 new registerAlbum(MainActivity2.this, album).execute();
 
 
-                // TODO: add album to history
+                // add album to history
                 // registerAlbumToHistory
                 new MainActivity2.registerAlbumToHistory(MainActivity2.this, account.getEmail()).execute();
 

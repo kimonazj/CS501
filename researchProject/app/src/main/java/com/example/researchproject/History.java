@@ -48,7 +48,7 @@ public class History extends AppCompatActivity {
         setContentView(R.layout.history);
 
         // create instance of database
-        db = Room.databaseBuilder(getApplicationContext(), AppDatabase.class, "project_db_v4").allowMainThreadQueries().build();
+        db = Room.databaseBuilder(getApplicationContext(), AppDatabase.class, "project_db_v5").allowMainThreadQueries().build();
 
         account = GoogleSignIn.getLastSignedInAccount(this);
 
@@ -70,7 +70,7 @@ public class History extends AppCompatActivity {
         }
         else {
             for (Album album : historyWithAlbums.albums) {
-                songhistory.add(album.getAlbumName()+"\n"+ album.getArtistName());
+                songhistory.add(album.getAlbumName()+"\n"+ album.getSongName() + "\n" + album.getArtistName());
             }
         }
 
