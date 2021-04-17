@@ -70,7 +70,9 @@ public class MainActivity2 extends AppCompatActivity {
 
     // global variables for API-based processing
     private String access_token;
-    private String text_recognition_output;
+    private String text_recognition_output; //album output
+    private String artist_output;
+    private String uri_output;
     private String SONG_URI;
     private String SONG_NAME;
 
@@ -195,34 +197,43 @@ public class MainActivity2 extends AppCompatActivity {
         // extract the text we got from the Text Recognition to use for our API calls
         setTextRecognitionOutPut();
 
-        // begin our sequence of API calls, starting with our call for an access token.
-        startAlbumSearch();
+        if(text_recognition_output!=null){
+            // begin our sequence of API calls, starting with our call for an access token.
+            startAlbumSearch();
 
-        // create connection parameters to use when we connect to the SpotifyAppRemote object
-        ConnectionParams connectionParams = new ConnectionParams.Builder(CLIENT_ID)
-                .setRedirectUri(REDIRECT_URI)
-                .showAuthView(true)
-                .build();
+            // create connection parameters to use when we connect to the SpotifyAppRemote object
+            ConnectionParams connectionParams = new ConnectionParams.Builder(CLIENT_ID)
+                    .setRedirectUri(REDIRECT_URI)
+                    .showAuthView(true)
+                    .build();
 
-        // connect to the SpotifyAppRemote object using the parameters
-        SpotifyAppRemote.connect(this, connectionParams,
-                new Connector.ConnectionListener() {
+            // connect to the SpotifyAppRemote object using the parameters
+            SpotifyAppRemote.connect(this, connectionParams,
+                    new Connector.ConnectionListener() {
 
-                    // once we're connected we can go through with our API Calls!
-                    @Override
-                    public void onConnected(SpotifyAppRemote spotifyAppRemote) {
-                        mSpotifyAppRemote = spotifyAppRemote;
-                        Log.d("MainActivity2", "Connected! Yay!");
+                        // once we're connected we can go through with our API Calls!
+                        @Override
+                        public void onConnected(SpotifyAppRemote spotifyAppRemote) {
+                            mSpotifyAppRemote = spotifyAppRemote;
+                            Log.d("MainActivity2", "Connected! Yay!");
 
-                        btnPlaySong.setEnabled(true);
-                    }
+                            btnPlaySong.setEnabled(true);
+                        }
 
-                    @Override
-                    public void onFailure(Throwable throwable) {
-                        Log.e("MainActivity2", throwable.getMessage(), throwable);
-                    }
+                        @Override
+                        public void onFailure(Throwable throwable) {
+                            Log.e("MainActivity2", throwable.getMessage(), throwable);
+                        }
 
-                });
+                    });
+        }else if(artist_output!=null){
+            // search based on artist
+        }else if(uri_output!=null){
+            // search based on uri
+        }else{
+            // they are all null
+        }
+
     }
     @Override
     protected void onStop() {
@@ -235,7 +246,9 @@ public class MainActivity2 extends AppCompatActivity {
         // Using the intent that activated this activity, store the recognized text
         // into our global variable
         Intent intent = getIntent();
-        text_recognition_output = intent.getStringExtra("textOutput");
+        text_recognition_output = intent.getStringExtra("album");
+        artist_output = intent.getStringExtra("artist");
+        uri_output = intent.getStringExtra("songuri");
     }
 
     private void startAlbumSearch() {

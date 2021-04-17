@@ -79,7 +79,7 @@ public class TextRecognitionActivity extends AppCompatActivity {
             public void onClick(View v) {
                 // Pass input text to MainActivity2 (for Spotify API)
                 Intent intent = new Intent(TextRecognitionActivity.this, MainActivity2.class);
-                intent.putExtra("textOutput", input_album.getText().toString());
+                intent.putExtra("album", input_album.getText().toString());
                 startActivity(intent);
             }
         });
@@ -146,7 +146,7 @@ public class TextRecognitionActivity extends AppCompatActivity {
 
                                 // Pass text to MainActivity2 (for Spotify API)
                                 Intent intent = new Intent(TextRecognitionActivity.this, MainActivity2.class);
-                                intent.putExtra("textOutput", search);
+                                intent.putExtra("album", search);
                                 startActivity(intent);
                             }
                         })

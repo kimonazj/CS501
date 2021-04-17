@@ -23,7 +23,9 @@ import com.google.android.gms.auth.api.signin.GoogleSignInAccount;
 
 import java.lang.ref.WeakReference;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 public class History extends AppCompatActivity {
     Button playbtn;
@@ -35,12 +37,15 @@ public class History extends AppCompatActivity {
     ListView listview;
 
     String selectedsong;
+    String selectedsonguri;
 
     AppDatabase db;
     // get signedin user
     GoogleSignInAccount account;
 
     private HistoryWithAlbums historyWithAlbums;
+
+    Map<String, String> albumMap;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -60,17 +65,21 @@ public class History extends AppCompatActivity {
         preferencetv = findViewById(R.id.recomtv);
         listview = findViewById(R.id.listview);
 
-        // TODO: change this working with database
         songhistory = new ArrayList<String>();
+
+        albumMap = new HashMap<>();
 
         new History.retrieveHistory(History.this, account.getEmail()).execute();
 
         if (historyWithAlbums == null) {
-            songhistory.add("Welcome to New York");
+            // if there is no history, default song will be Taylor Swift's welcome to new york
+            songhistory.add("1989"+"\n"+"Welcome to New York"+"\n"+"Taylor Swift");
+            albumMap.put("1989","https://open.spotify.com/track/6qnM0XXPZOINWA778uNqQ9?si=f517332dcd7344f2");
         }
         else {
             for (Album album : historyWithAlbums.albums) {
                 songhistory.add(album.getAlbumName()+"\n"+ album.getSongName() + "\n" + album.getArtistName());
+                albumMap.put(album.getAlbumName(),album.getSongUri());
             }
         }
 
@@ -81,7 +90,9 @@ public class History extends AppCompatActivity {
         listview.setOnItemClickListener(new AdapterView.OnItemClickListener(){
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-                selectedsong = String.valueOf(parent.getItemAtPosition(position));
+                // split the string to get the album
+                String songinfo[] = String.valueOf(parent.getItemAtPosition(position)).split("\\n");
+                selectedsonguri = albumMap.get(songinfo[0]);
             }
         });
 
@@ -105,7 +116,7 @@ public class History extends AppCompatActivity {
             public void onClick(View v) {
                 if(selectedsong!=null){
                     Intent intent = new Intent(History.this, MainActivity2.class);
-                    intent.putExtra("textOutput", selectedsong);
+                    intent.putExtra("songuri", selectedsonguri);
                     startActivity(intent);
                 }
                 else{

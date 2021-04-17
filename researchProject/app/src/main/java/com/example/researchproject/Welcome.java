@@ -1,6 +1,7 @@
 package com.example.researchproject;
 
 import android.content.Intent;
+import android.os.AsyncTask;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.Button;
@@ -8,8 +9,18 @@ import android.widget.TextView;
 
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.room.Room;
 
+import com.example.researchproject.database.Album;
+import com.example.researchproject.database.AppDatabase;
+import com.example.researchproject.database.HistoryWithAlbums;
+import com.google.android.gms.auth.api.signin.GoogleSignIn;
+import com.google.android.gms.auth.api.signin.GoogleSignInAccount;
+
+import java.lang.ref.WeakReference;
 import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Map;
 
 public class Welcome extends AppCompatActivity {
 
@@ -24,7 +35,14 @@ public class Welcome extends AppCompatActivity {
 
     // global variables for history and recommend system
     ArrayList<String> songhistory;
-    Boolean artistbase;
+
+    // for history database
+    AppDatabase db;
+
+    // get signedin user
+    GoogleSignInAccount account;
+
+    private HistoryWithAlbums historyWithAlbums;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -36,6 +54,28 @@ public class Welcome extends AppCompatActivity {
         history = (Button)findViewById(R.id.history);
         newalbum = (Button)findViewById(R.id.get_new_album);
         recomsong = (TextView)findViewById(R.id.recomsong);
+
+        // create instance of database
+        db = Room.databaseBuilder(getApplicationContext(), AppDatabase.class, "project_db_v5").allowMainThreadQueries().build();
+
+        account = GoogleSignIn.getLastSignedInAccount(this);
+
+        songhistory = new ArrayList<String>();
+
+        new Welcome.retrieveHistory(Welcome.this, account.getEmail()).execute();
+
+        if (historyWithAlbums == null) {
+            // if there is no history, default song will be Taylor Swift's welcome to new york
+            recomstring = "Taylor Swift";
+            recomsong.setText("Taylor Swift");
+        }
+        else {
+            for (Album album : historyWithAlbums.albums) {
+                songhistory.add(album.getArtistName());
+            }
+            recomstring = mostCommon(songhistory);
+            recomsong.setText(recomstring);
+        }
 
         //search a new album
         newalbum.setOnClickListener(new View.OnClickListener() {
@@ -51,7 +91,7 @@ public class Welcome extends AppCompatActivity {
             @Override
             public void onClick(View v) {
                 Intent play = new Intent(Welcome.this, MainActivity2.class);
-                play.putExtra("songname",recomstring);
+                play.putExtra("artist",recomstring);
                 startActivity(play);
             }
         });
@@ -67,5 +107,49 @@ public class Welcome extends AppCompatActivity {
                 startActivity(history);
             }
         });
+    }
+
+    public static <T> T mostCommon(ArrayList<T> list) {
+        Map<T, Integer> map = new HashMap<>();
+
+        for (T t : list) {
+            Integer val = map.get(t);
+            map.put(t, val == null ? 1 : val + 1);
+        }
+
+        Map.Entry<T, Integer> max = null;
+
+        for (Map.Entry<T, Integer> e : map.entrySet()) {
+            if (max == null || e.getValue() > max.getValue())
+                max = e;
+        }
+
+        return max.getKey();
+    }
+
+    private static class retrieveHistory extends AsyncTask<Void,Void, HistoryWithAlbums> {
+
+        private WeakReference<Welcome> activityReference;
+        String userId;
+
+        // only retain a weak reference to the activity
+        retrieveHistory(Welcome context, String userId) {
+            activityReference = new WeakReference<>(context);
+            this.userId = userId;
+        }
+
+        // doInBackground methods runs on a worker thread
+        @Override
+        protected HistoryWithAlbums doInBackground(Void... objs) {
+            HistoryWithAlbums historyWithAlbums = activityReference.get().db.historyWithAlbumsDao().getHistoryWithAlbums(userId);
+            return historyWithAlbums;
+        }
+
+        // onPostExecute runs on main thread
+        @Override
+        protected void onPostExecute(HistoryWithAlbums historyWithAlbums) {
+            activityReference.get().historyWithAlbums = historyWithAlbums;
+        }
+
     }
 }
