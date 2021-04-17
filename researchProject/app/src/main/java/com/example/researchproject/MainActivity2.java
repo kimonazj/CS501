@@ -75,6 +75,7 @@ public class MainActivity2 extends AppCompatActivity {
     private String uri_output;
     private String SONG_URI;
     private String SONG_NAME;
+    private int SEARCH_TYPE;
 
     // UI Components
     private TextView showAlbumName;
@@ -83,18 +84,20 @@ public class MainActivity2 extends AppCompatActivity {
     private Button searchnew;
     private Button back;
     private Button addReview;
-    private boolean FIRST_PLAY;
 
     // a list review component
     private ListView reviewListView;
 
     // get variables for db
-    private String album_artist;
-    private String album_name;
+    private String ALBUM_ARTIST;
+    private String ALBUM_NAME;
     private List<Review> reviewList;
 
     // to store comments in string
     List<String> stringlist = new ArrayList<String>();
+
+    // media player variables
+    private boolean FIRST_PLAY;
 
     Handler handler;
 
@@ -195,7 +198,7 @@ public class MainActivity2 extends AppCompatActivity {
         super.onStart();
 
         // extract the text we got from the Text Recognition to use for our API calls
-        setTextRecognitionOutPut();
+        setSearchInput();
 
         if(text_recognition_output!=null){
             // begin our sequence of API calls, starting with our call for an access token.
@@ -242,8 +245,8 @@ public class MainActivity2 extends AppCompatActivity {
         SpotifyAppRemote.disconnect(mSpotifyAppRemote);
     }
 
-    private void setTextRecognitionOutPut() {
-        // Using the intent that activated this activity, store the recognized text
+    private void setSearchInput() {
+        // Using the intent that activated this activity, store the search input
         // into our global variable
         Intent intent = getIntent();
         text_recognition_output = intent.getStringExtra("album");
@@ -251,8 +254,8 @@ public class MainActivity2 extends AppCompatActivity {
         uri_output = intent.getStringExtra("songuri");
     }
 
-    private void startAlbumSearch() {
-        getAccessToken();
+    private void startApiSearch() {
+        volleyGetAlbumID(search_input);
     }
 
     private void setReviewListView(List<Review> reviewList) {
@@ -292,7 +295,7 @@ public class MainActivity2 extends AppCompatActivity {
 
                 access_token = received_token;
 
-                volleyGetAlbumID(text_recognition_output);
+                volleyGetAlbumID(search_input);
             } catch (JSONException e) {
                 e.printStackTrace();
             }
@@ -351,9 +354,9 @@ public class MainActivity2 extends AppCompatActivity {
                 JSONObject album_data = first_album.getJSONArray("items").getJSONObject(0);
 
                 // get album name and album artist
-                album_artist = album_data.getJSONArray("artists").getJSONObject(0).getString("name");
-                album_name = album_data.getString("name");
-                showAlbumName.setText(getString(R.string.now_playing) + album_name);
+                ALBUM_ARTIST = album_data.getJSONArray("artists").getJSONObject(0).getString("name");
+                ALBUM_NAME = album_data.getString("name");
+                showAlbumName.setText(getString(R.string.now_playing) + ALBUM_NAME);
 
                 String album_id = album_data.getString("id");
                 volleyGetAlbumSong(album_id);
@@ -361,7 +364,14 @@ public class MainActivity2 extends AppCompatActivity {
                 e.printStackTrace();
             }
 
-        }, error -> error.printStackTrace())
+        }, error -> {
+            if (error.networkResponse.statusCode == 401) {
+                getAccessToken();
+            } else {
+                // irrecoverable errors. show error to user.
+                error.printStackTrace();
+            }
+        })
         {
             public Map<String, String> getHeaders() throws AuthFailureError {
                 Map<String, String> headers = new HashMap<String, String>();
@@ -386,21 +396,139 @@ public class MainActivity2 extends AppCompatActivity {
         JsonObjectRequest jsonObjectRequest = new JsonObjectRequest(Request.Method.GET, url, null, response -> {
             Log.d("GetRequest", response.toString());
 
-            // once we have a response, retrieve the url to a 30 second preview
+            // once we have a response, filter the first
             // from the first track on the album, then store it in a global variable.
             try {
                 JSONArray track_list = response.getJSONArray("items");
                 JSONObject first_track = track_list.getJSONObject(0);
-                String received_uri = first_track.getString("uri");
 
-                // get song name
+                // get song name and uri
+                String received_uri = first_track.getString("uri");
                 String song_name = first_track.getString("name");
                 SONG_NAME = song_name;
                 SONG_URI = received_uri;
 
                 // add this new album to our database
                 //Album album = new Album("example", "exampleagain", "wowexample");
-                Album album = new Album(SONG_URI, album_name, SONG_NAME, album_artist);
+                Album album = new Album(SONG_URI, ALBUM_NAME, SONG_NAME, ALBUM_ARTIST);
+                new registerAlbum(MainActivity2.this, album).execute();
+
+
+                // add album to history
+                // registerAlbumToHistory
+                new MainActivity2.registerAlbumToHistory(MainActivity2.this, account.getEmail()).execute();
+
+                // get reviews
+                new retrieveReviews(this).execute();
+
+            } catch (JSONException e) {
+                e.printStackTrace();
+            }
+
+        }, error -> error.printStackTrace())
+        {
+            public Map<String, String> getHeaders() throws AuthFailureError {
+                Map<String, String> headers = new HashMap<String, String>();
+
+                // required headers for API call
+                String auth = "Bearer " + access_token;
+                headers.put("Authorization", auth);
+                return headers;
+            }
+        };
+
+        // begin request asap
+        requestQueue.add(jsonObjectRequest);
+    }
+
+    public void volleyGetArtistID(String input) {
+
+        // find the url to run our album search
+        String url = "";
+        String encodedText = "";
+        try {
+            // encode our search input so it fits UTF-8 format
+            encodedText = URLEncoder.encode(input, "UTF-8").replace("+", "%20");
+
+            // put together our url
+            url = "https://api.spotify.com/v1/search?type=artist&q=" + encodedText;
+        } catch (UnsupportedEncodingException e) {
+            e.printStackTrace();
+        }
+
+        // create another queue to run our request
+        RequestQueue requestQueue = Volley.newRequestQueue(this);
+
+        JsonObjectRequest jsonObjectRequest = new JsonObjectRequest(Request.Method.GET, url, null, response -> {
+            Log.d("GetRequest", response.toString());
+
+            // once we have a response, retrieve the first album on the search results,
+            // then display the album name, and extract the album's ID on the Spotify app
+            // for our final API call
+            try {
+                JSONObject artists = (JSONObject) response.get("artists");
+                JSONObject first_artist_data = artists.getJSONArray("items").getJSONObject(0);
+
+                // get album name and album artist
+                ALBUM_ARTIST = first_artist_data.getString("name");
+
+                String artist_id = first_artist_data.getString("id");
+                volleyGetRandomArtistTrack(artist_id);
+            } catch (JSONException e) {
+                e.printStackTrace();
+            }
+
+        }, error -> {
+            if (error.networkResponse.statusCode == 401) {
+                getAccessToken();
+            } else {
+                // irrecoverable errors. show error to user.
+                error.printStackTrace();
+            }
+        })
+        {
+            public Map<String, String> getHeaders() throws AuthFailureError {
+                Map<String, String> headers = new HashMap<String, String>();
+                // Required Headers for API call
+                String auth = "Bearer " + access_token;
+                headers.put("Authorization", auth);
+                return headers;
+            }
+        };
+
+        // begin request asap
+        requestQueue.add(jsonObjectRequest);
+    }
+
+    public void volleyGetRandomArtistTrack(String input) {
+        // put together our url using the artist id from the previous call
+        String url = "https://api.spotify.com/v1/artists/" + input + "/top-tracks";
+
+        // instantiate queue for our request
+        RequestQueue requestQueue = Volley.newRequestQueue(this);
+
+        JsonObjectRequest jsonObjectRequest = new JsonObjectRequest(Request.Method.GET, url, null, response -> {
+            Log.d("GetRequest", response.toString());
+
+            // once we have a response, find a random track to play
+            // from the top tracks of the artist
+            try {
+                int index = (int) (Math.random() * 10);
+                JSONArray top_tracks = response.getJSONArray("tracks");
+                JSONObject random_track = top_tracks.getJSONObject(index);
+
+                // get song name and uri
+                String received_album_name = random_track.getJSONObject("album").getString("name");
+                String received_uri = random_track.getString("uri");
+                String song_name = random_track.getString("name");
+
+                ALBUM_NAME = received_album_name;
+                SONG_NAME = song_name;
+                SONG_URI = received_uri;
+
+                // add this new album to our database
+                //Album album = new Album("example", "exampleagain", "wowexample");
+                Album album = new Album(SONG_URI, ALBUM_NAME, SONG_NAME, ALBUM_ARTIST);
                 new registerAlbum(MainActivity2.this, album).execute();
 
 
