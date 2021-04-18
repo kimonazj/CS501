@@ -32,29 +32,8 @@
         android:layout_marginTop="10dp"
         android:text="Listen to selected song" />
 
-    <LinearLayout
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_below="@+id/playsong"
-        android:layout_centerHorizontal="true"
-        android:orientation="horizontal"
-        android:layout_marginTop="10dp">
 
-        <TextView
-            android:id="@+id/recomtv"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:textSize="14dp"
-            android:text="Recommended tracks based on: genre" />
 
-        <Button
-            android:id="@+id/changebtn"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:textSize="10dp"
-            android:layout_marginLeft="10dp"
-            android:text="Change" />
-    </LinearLayout>
 
 
     <Button
