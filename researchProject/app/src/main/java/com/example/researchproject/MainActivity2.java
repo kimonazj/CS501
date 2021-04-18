@@ -72,7 +72,10 @@ public class MainActivity2 extends AppCompatActivity {
     private String access_token;
     private String album_output; //album output
     private String artist_output;
-    private String uri_output;
+    private String history_uri_output;
+    private String history_album_output;
+    private String history_song_output;
+    private String history_artist_output;
     private String SONG_URI;
     private String SONG_NAME;
     private String ALBUM_ARTIST;
@@ -104,7 +107,7 @@ public class MainActivity2 extends AppCompatActivity {
     // media player variables
     private boolean FIRST_PLAY;
 
-    Handler handler;
+    private Handler handler;
 
     AppDatabase db;
 
@@ -217,10 +220,19 @@ public class MainActivity2 extends AppCompatActivity {
             // search based on artist
             startRecommendedArtistTrackSearch();
 
-        }else if(uri_output != null){
+        }else if(history_uri_output != null){
 
             // replay a song from the user's history.
-            SONG_URI = uri_output;
+            SONG_URI = history_uri_output;
+            ALBUM_ARTIST = history_artist_output;
+            ALBUM_NAME = history_album_output;
+            SONG_NAME = history_song_output;
+
+            // display the album, song and artist names
+            showAlbumName.setText(SONG_NAME + " from " + ALBUM_NAME + "\n by " + ALBUM_ARTIST);
+
+            // get reviews
+            new retrieveReviews(this).execute();
 
         }else{
 
@@ -267,9 +279,14 @@ public class MainActivity2 extends AppCompatActivity {
         // Using the intent that activated this activity, store the search input
         // into our global variable
         Intent intent = getIntent();
+
         album_output = intent.getStringExtra("album");
         artist_output = intent.getStringExtra("artist");
-        uri_output = intent.getStringExtra("songuri");
+
+        history_uri_output = intent.getStringExtra("songUri");
+        history_album_output = intent.getStringExtra("historyAlbum");
+        history_song_output = intent.getStringExtra("historySong");
+        history_artist_output = intent.getStringExtra("historyArtist");
     }
 
     private void startAlbumSearch() {
@@ -707,7 +724,7 @@ public class MainActivity2 extends AppCompatActivity {
             String songUri = activityReference.get().SONG_URI;
 
             History history = activityReference.get().db.historyDao().findByUserId(userId);
-            activityReference.get().db.historyWithAlbumsDao().insert(new HistoryAlbumCrossRef(history.historyId, songUri));
+//            activityReference.get().db.historyWithAlbumsDao().insert(new HistoryAlbumCrossRef(history.historyId, songUri));
 
             return true;
         }

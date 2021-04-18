@@ -6,6 +6,9 @@ import androidx.room.Query;
 
 @Dao
 public interface HistoryAlbumCrossRefDao {
+//    @Query("SELECT * FROM historyWithAlbums WHERE userId = :historyId" )
+//    HistoryAlbumCrossRef findByHistoryId(int historyId);
+
     @Insert
     void insert(HistoryAlbumCrossRef historyAlbumCrossRef);
 }

@@ -3,6 +3,9 @@ package com.example.researchproject;
 import android.content.Intent;
 import android.os.AsyncTask;
 import android.os.Bundle;
+import android.os.Handler;
+import android.os.Looper;
+import android.util.Log;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
@@ -18,6 +21,7 @@ import androidx.room.Room;
 import com.example.researchproject.database.Album;
 import com.example.researchproject.database.AppDatabase;
 import com.example.researchproject.database.HistoryWithAlbums;
+import com.example.researchproject.database.Review;
 import com.google.android.gms.auth.api.signin.GoogleSignIn;
 import com.google.android.gms.auth.api.signin.GoogleSignInAccount;
 
@@ -39,10 +43,13 @@ public class History extends AppCompatActivity {
     String selectedSong;
     String selectedSongUri;
     String selectedSongArtist;
+    String selectedAlbum;
 
     AppDatabase db;
     // get signedin user
     GoogleSignInAccount account;
+
+    private Handler handler;
 
     private HistoryWithAlbums historyWithAlbums;
 
@@ -66,34 +73,30 @@ public class History extends AppCompatActivity {
         preferenceTV = findViewById(R.id.recomtv);
         listview = findViewById(R.id.listview);
 
+        handler = new Handler(Looper.getMainLooper());
+
         songHistory = new ArrayList<String>();
 
         albumMap = new HashMap<>();
 
         new History.retrieveHistory(History.this, account.getEmail()).execute();
 
-        if (historyWithAlbums == null) {
-            // if there is no history, default song will be Taylor Swift's welcome to new york
-            songHistory.add("1989"+"\n"+"Welcome to New York"+"\n"+"Taylor Swift");
-            albumMap.put("1989","https://open.spotify.com/track/6qnM0XXPZOINWA778uNqQ9?si=f517332dcd7344f2");
-        }
-        else {
-            for (Album album : historyWithAlbums.albums) {
-                songHistory.add(album.getAlbumName()+"\n"+ album.getSongName() + "\n" + album.getArtistName());
-                albumMap.put(album.getAlbumName(),album.getSongUri());
-            }
-        }
-
-        //display song history in the listview
-        ArrayAdapter adapter= new ArrayAdapter<String>(this, android.R.layout.simple_list_item_1, songHistory);
-        listview.setAdapter(adapter);
-
         listview.setOnItemClickListener(new AdapterView.OnItemClickListener(){
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-                // split the string to get the album
-                String songinfo[] = String.valueOf(parent.getItemAtPosition(position)).split("\\n");
-                selectedSongUri = albumMap.get(songinfo[0]);
+                // split the string in the item to get relevant data
+                String itemInfo[] = String.valueOf(parent.getItemAtPosition(position)).split("\\n");
+
+                // the first index is a String written as "{song_name} by {album_artist}"
+                String songAndArtist[] = itemInfo[0].split(" by ");
+
+                selectedSong = songAndArtist[0];
+
+                selectedSongArtist = songAndArtist[1];
+
+                selectedAlbum = itemInfo[1].replace("Album: ", "");
+
+                selectedSongUri = albumMap.get(selectedSong);
             }
         });
 
@@ -117,7 +120,10 @@ public class History extends AppCompatActivity {
             public void onClick(View v) {
                 if(selectedSong!=null){
                     Intent intent = new Intent(History.this, MainActivity2.class);
-                    intent.putExtra("songuri", selectedSongUri);
+                    intent.putExtra("historyAlbum", selectedAlbum);
+                    intent.putExtra("historyArtist", selectedSongArtist);
+                    intent.putExtra("historySong", selectedSong);
+                    intent.putExtra("songUri", selectedSongUri);
                     startActivity(intent);
                 }
                 else{
@@ -137,6 +143,26 @@ public class History extends AppCompatActivity {
 
     }
 
+    private void setHistoryListview(HistoryWithAlbums historyWithAlbums) {
+        this.historyWithAlbums = historyWithAlbums;
+
+        if (historyWithAlbums == null) {
+            // if there is no history, default song will be Taylor Swift's welcome to new york
+            songHistory.add("1989"+"\n"+"Welcome to New York"+"\n"+"Taylor Swift");
+            albumMap.put("1989","https://open.spotify.com/track/6qnM0XXPZOINWA778uNqQ9?si=f517332dcd7344f2");
+        }
+        else {
+            for (Album album : historyWithAlbums.albums) {
+                songHistory.add(album.getSongName() + " by " + album.getArtistName() + "\nAlbum: " + album.getAlbumName()+"\n");
+                albumMap.put(album.getSongName(),album.getSongUri());
+            }
+        }
+
+        //display song history in the listview
+        ArrayAdapter adapter= new ArrayAdapter<String>(this, android.R.layout.simple_list_item_1, songHistory);
+        listview.setAdapter(adapter);
+    }
+
     // TODO: retrieveHistory
     private static class retrieveHistory extends AsyncTask<Void,Void,HistoryWithAlbums> {
 
@@ -152,7 +178,18 @@ public class History extends AppCompatActivity {
         // doInBackground methods runs on a worker thread
         @Override
         protected HistoryWithAlbums doInBackground(Void... objs) {
+
+            Log.d("History", "doInBackground for retrieveHistory");
+
             HistoryWithAlbums historyWithAlbums = activityReference.get().db.historyWithAlbumsDao().getHistoryWithAlbums(userId);
+
+            activityReference.get().handler.post(new Runnable() {
+                @Override
+                public void run() {
+                    activityReference.get().setHistoryListview(historyWithAlbums);
+                }
+            });
+
             return historyWithAlbums;
         }
 
