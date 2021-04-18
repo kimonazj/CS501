@@ -70,12 +70,19 @@ public class MainActivity2 extends AppCompatActivity {
 
     // global variables for API-based processing
     private String access_token;
-    private String text_recognition_output; //album output
+    private String album_output; //album output
     private String artist_output;
     private String uri_output;
     private String SONG_URI;
     private String SONG_NAME;
-    private int SEARCH_TYPE;
+    private String ALBUM_ARTIST;
+    private String ALBUM_NAME;
+
+    // integer variables to distinguish API calls
+    private int GET_ALBUM_ID = 0;
+    private int GET_ALBUM_TRACK = 1;
+    private int GET_ARTIST_ID = 2;
+    private int GET_ARTIST_TRACK = 3;
 
     // UI Components
     private TextView showAlbumName;
@@ -89,8 +96,6 @@ public class MainActivity2 extends AppCompatActivity {
     private ListView reviewListView;
 
     // get variables for db
-    private String ALBUM_ARTIST;
-    private String ALBUM_NAME;
     private List<Review> reviewList;
 
     // to store comments in string
@@ -170,6 +175,8 @@ public class MainActivity2 extends AppCompatActivity {
                 //display comments in the listview
                 reviewListView.setAdapter(new ArrayAdapter<String>(MainActivity2.this, android.R.layout.simple_list_item_1, stringlist));
 
+                newReview.setText("");
+
             }
         });
 
@@ -200,42 +207,53 @@ public class MainActivity2 extends AppCompatActivity {
         // extract the text we got from the Text Recognition to use for our API calls
         setSearchInput();
 
-        if(text_recognition_output!=null){
+        if(album_output != null){
+
             // begin our sequence of API calls, starting with our call for an access token.
             startAlbumSearch();
 
-            // create connection parameters to use when we connect to the SpotifyAppRemote object
-            ConnectionParams connectionParams = new ConnectionParams.Builder(CLIENT_ID)
-                    .setRedirectUri(REDIRECT_URI)
-                    .showAuthView(true)
-                    .build();
+        }else if(artist_output != null){
 
-            // connect to the SpotifyAppRemote object using the parameters
-            SpotifyAppRemote.connect(this, connectionParams,
-                    new Connector.ConnectionListener() {
-
-                        // once we're connected we can go through with our API Calls!
-                        @Override
-                        public void onConnected(SpotifyAppRemote spotifyAppRemote) {
-                            mSpotifyAppRemote = spotifyAppRemote;
-                            Log.d("MainActivity2", "Connected! Yay!");
-
-                            btnPlaySong.setEnabled(true);
-                        }
-
-                        @Override
-                        public void onFailure(Throwable throwable) {
-                            Log.e("MainActivity2", throwable.getMessage(), throwable);
-                        }
-
-                    });
-        }else if(artist_output!=null){
             // search based on artist
-        }else if(uri_output!=null){
-            // search based on uri
+            startRecommendedArtistTrackSearch();
+
+        }else if(uri_output != null){
+
+            // replay a song from the user's history.
+            SONG_URI = uri_output;
+
         }else{
-            // they are all null
+
+            // if no output is given from previous activity, display error in Log.
+            Log.d("MainActivity2", "No search inputs given from previous activities.");
+
         }
+
+        // create connection parameters to use when we connect to the SpotifyAppRemote object
+        ConnectionParams connectionParams = new ConnectionParams.Builder(CLIENT_ID)
+                .setRedirectUri(REDIRECT_URI)
+                .showAuthView(true)
+                .build();
+
+        // connect to the SpotifyAppRemote object using the parameters
+        SpotifyAppRemote.connect(this, connectionParams,
+                new Connector.ConnectionListener() {
+
+                    // once we're connected we can go through with our API Calls!
+                    @Override
+                    public void onConnected(SpotifyAppRemote spotifyAppRemote) {
+                        mSpotifyAppRemote = spotifyAppRemote;
+                        Log.d("MainActivity2", "Connected! Yay!");
+
+                        btnPlaySong.setEnabled(true);
+                    }
+
+                    @Override
+                    public void onFailure(Throwable throwable) {
+                        Log.e("MainActivity2", throwable.getMessage(), throwable);
+                    }
+
+                });
 
     }
     @Override
@@ -249,13 +267,17 @@ public class MainActivity2 extends AppCompatActivity {
         // Using the intent that activated this activity, store the search input
         // into our global variable
         Intent intent = getIntent();
-        text_recognition_output = intent.getStringExtra("album");
+        album_output = intent.getStringExtra("album");
         artist_output = intent.getStringExtra("artist");
         uri_output = intent.getStringExtra("songuri");
     }
 
-    private void startApiSearch() {
-        volleyGetAlbumID(search_input);
+    private void startAlbumSearch() {
+        getAccessToken(GET_ALBUM_ID, album_output);
+    }
+
+    private void startRecommendedArtistTrackSearch() {
+        getAccessToken(GET_ARTIST_ID, artist_output);
     }
 
     private void setReviewListView(List<Review> reviewList) {
@@ -276,7 +298,7 @@ public class MainActivity2 extends AppCompatActivity {
         reviewListView.setAdapter(new ArrayAdapter<String>(this, android.R.layout.simple_list_item_1, stringlist));
     }
 
-    private void getAccessToken() {
+    private void getAccessToken(int api_call, String api_input) {
         // use the appropriate URL to find our access token
         String postUrl = "https://accounts.spotify.com/api/token";
         // create a new queue to run our request in
@@ -287,15 +309,37 @@ public class MainActivity2 extends AppCompatActivity {
 
             Log.d("MainActivity2", "access_token from the post request is: " + response);
             // once we have a response, extract the access token and store as a global variable
-            // so we can reference it in later API calls, then immediately begin our next API call
-            // to find an album ID
+            // so we can reference it in later API calls, then immediately begin/resume our current API call
             try {
                 JSONObject jsonObject = new JSONObject(response);
                 String received_token = jsonObject.getString("access_token");
 
                 access_token = received_token;
 
-                volleyGetAlbumID(search_input);
+                // find out next API call with the api_call variable,
+                // then begin API call with api_input as parameter.
+                if (api_call == GET_ALBUM_ID) {
+
+                    volleyGetAlbumID(api_input);
+
+                } else if (api_call == GET_ALBUM_TRACK) {
+
+                    volleyGetAlbumSong(api_input);
+
+                } else if (api_call == GET_ARTIST_ID) {
+
+                    volleyGetArtistID(api_input);
+
+                } else if (api_call == GET_ARTIST_TRACK) {
+
+                    volleyGetRandomArtistTrack(api_input);
+
+                } else {
+
+                    // for all other values in api_call, report the error in the log.
+                    Log.d("MainActivity2", "Access Token found, but no valid API calls requested.");
+
+                }
             } catch (JSONException e) {
                 e.printStackTrace();
             }
@@ -356,7 +400,6 @@ public class MainActivity2 extends AppCompatActivity {
                 // get album name and album artist
                 ALBUM_ARTIST = album_data.getJSONArray("artists").getJSONObject(0).getString("name");
                 ALBUM_NAME = album_data.getString("name");
-                showAlbumName.setText(getString(R.string.now_playing) + ALBUM_NAME);
 
                 String album_id = album_data.getString("id");
                 volleyGetAlbumSong(album_id);
@@ -365,11 +408,13 @@ public class MainActivity2 extends AppCompatActivity {
             }
 
         }, error -> {
+            // if the error is from an expired access token,
+            // make an api call to refresh the access token first
             if (error.networkResponse.statusCode == 401) {
-                getAccessToken();
+                getAccessToken(GET_ALBUM_ID, input);
             } else {
-                // irrecoverable errors. show error to user.
-                error.printStackTrace();
+                // irrecoverable errors. log the error for debugging.
+                Log.d("GetRequest", error.toString());
             }
         })
         {
@@ -408,6 +453,9 @@ public class MainActivity2 extends AppCompatActivity {
                 SONG_NAME = song_name;
                 SONG_URI = received_uri;
 
+                // set our textView to display the current song.
+                showAlbumName.setText(SONG_NAME + " from " + ALBUM_NAME + "\n by " + ALBUM_ARTIST);
+
                 // add this new album to our database
                 //Album album = new Album("example", "exampleagain", "wowexample");
                 Album album = new Album(SONG_URI, ALBUM_NAME, SONG_NAME, ALBUM_ARTIST);
@@ -425,7 +473,16 @@ public class MainActivity2 extends AppCompatActivity {
                 e.printStackTrace();
             }
 
-        }, error -> error.printStackTrace())
+        }, error -> {
+            // if the error is from an expired access token,
+            // make an api call to refresh the access token first
+            if (error.networkResponse.statusCode == 401) {
+                getAccessToken(GET_ALBUM_TRACK, input);
+            } else {
+                // irrecoverable errors. log the error for debugging.
+                Log.d("GetRequest", error.toString());
+            }
+        })
         {
             public Map<String, String> getHeaders() throws AuthFailureError {
                 Map<String, String> headers = new HashMap<String, String>();
@@ -474,16 +531,19 @@ public class MainActivity2 extends AppCompatActivity {
 
                 String artist_id = first_artist_data.getString("id");
                 volleyGetRandomArtistTrack(artist_id);
+
             } catch (JSONException e) {
                 e.printStackTrace();
             }
 
         }, error -> {
+            // if the error is from an expired access token,
+            // make an api call to refresh the access token first
             if (error.networkResponse.statusCode == 401) {
-                getAccessToken();
+                getAccessToken(GET_ARTIST_ID, input);
             } else {
-                // irrecoverable errors. show error to user.
-                error.printStackTrace();
+                // irrecoverable errors. log the error for debugging.
+                Log.d("GetRequest", error.toString());
             }
         })
         {
@@ -502,7 +562,7 @@ public class MainActivity2 extends AppCompatActivity {
 
     public void volleyGetRandomArtistTrack(String input) {
         // put together our url using the artist id from the previous call
-        String url = "https://api.spotify.com/v1/artists/" + input + "/top-tracks";
+        String url = "https://api.spotify.com/v1/artists/" + input + "/top-tracks?market=US";
 
         // instantiate queue for our request
         RequestQueue requestQueue = Volley.newRequestQueue(this);
@@ -526,6 +586,9 @@ public class MainActivity2 extends AppCompatActivity {
                 SONG_NAME = song_name;
                 SONG_URI = received_uri;
 
+                // set our textView to display the current song.
+                showAlbumName.setText(SONG_NAME + " from " + ALBUM_NAME + "\n by " + ALBUM_ARTIST);
+
                 // add this new album to our database
                 //Album album = new Album("example", "exampleagain", "wowexample");
                 Album album = new Album(SONG_URI, ALBUM_NAME, SONG_NAME, ALBUM_ARTIST);
@@ -543,7 +606,16 @@ public class MainActivity2 extends AppCompatActivity {
                 e.printStackTrace();
             }
 
-        }, error -> error.printStackTrace())
+        }, error -> {
+            // if the error is from an expired access token,
+            // make an api call to refresh the access token first
+            if (error.networkResponse.statusCode == 401) {
+                getAccessToken(GET_ALBUM_TRACK, input);
+            } else {
+                // irrecoverable errors. log the error for debugging.
+                Log.d("GetRequest", error.toString());
+            }
+        })
         {
             public Map<String, String> getHeaders() throws AuthFailureError {
                 Map<String, String> headers = new HashMap<String, String>();
@@ -602,8 +674,7 @@ public class MainActivity2 extends AppCompatActivity {
         @Override
         protected Boolean doInBackground(Void... objs) {
             try {
-                ReviewDao reviewDao = activityReference.get().db.reviewDao();
-                reviewDao.insert(review);
+                activityReference.get().db.reviewDao().insert(review);
                 return true;
             } catch (Exception e) {
                 Log.d("MainActivity2", "Encountered following Error in registerView: " + e);
@@ -633,8 +704,11 @@ public class MainActivity2 extends AppCompatActivity {
         @Override
         protected Boolean doInBackground(Void... objs) {
 
+            String songUri = activityReference.get().SONG_URI;
+
             History history = activityReference.get().db.historyDao().findByUserId(userId);
-            activityReference.get().db.historyWithAlbumsDao().insert(new HistoryAlbumCrossRef(history.historyId, activityReference.get().SONG_URI));
+            activityReference.get().db.historyWithAlbumsDao().insert(new HistoryAlbumCrossRef(history.historyId, songUri));
+
             return true;
         }
 

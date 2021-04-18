@@ -7,10 +7,10 @@
     <string name="View_history">View History</string>
     <string name="play_music">Play Music</string>
     <string name="pause_music">Pause Music</string>
-    <string name="Upload">Take a new Photo</string>
+    <string name="Upload">Take a New Photo</string>
     <string name="Find_pic">Browse in local library</string>
     <string name="result">Search Result</string>
-    <string name="listen">listen in spotify</string>
-    <string name="get_new_pic">Take a New Photo</string>
+    <string name="listen">Listen in Spotify</string>
+    <string name="get_new_album">Search for New Album</string>
     <string name="back">Back</string>
 </resources>

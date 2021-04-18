@@ -31,13 +31,14 @@ public class History extends AppCompatActivity {
     Button playbtn;
     Button change;
     Button back;
-    ArrayList<String> songhistory;
-    Boolean artistbase; // default is false => genre
-    TextView preferencetv;
+    ArrayList<String> songHistory;
+    Boolean artistBase; // default is false => genre
+    TextView preferenceTV;
     ListView listview;
 
-    String selectedsong;
-    String selectedsonguri;
+    String selectedSong;
+    String selectedSongUri;
+    String selectedSongArtist;
 
     AppDatabase db;
     // get signedin user
@@ -62,10 +63,10 @@ public class History extends AppCompatActivity {
         change = findViewById(R.id.changebtn);
         back = findViewById(R.id.back);
 
-        preferencetv = findViewById(R.id.recomtv);
+        preferenceTV = findViewById(R.id.recomtv);
         listview = findViewById(R.id.listview);
 
-        songhistory = new ArrayList<String>();
+        songHistory = new ArrayList<String>();
 
         albumMap = new HashMap<>();
 
@@ -73,18 +74,18 @@ public class History extends AppCompatActivity {
 
         if (historyWithAlbums == null) {
             // if there is no history, default song will be Taylor Swift's welcome to new york
-            songhistory.add("1989"+"\n"+"Welcome to New York"+"\n"+"Taylor Swift");
+            songHistory.add("1989"+"\n"+"Welcome to New York"+"\n"+"Taylor Swift");
             albumMap.put("1989","https://open.spotify.com/track/6qnM0XXPZOINWA778uNqQ9?si=f517332dcd7344f2");
         }
         else {
             for (Album album : historyWithAlbums.albums) {
-                songhistory.add(album.getAlbumName()+"\n"+ album.getSongName() + "\n" + album.getArtistName());
+                songHistory.add(album.getAlbumName()+"\n"+ album.getSongName() + "\n" + album.getArtistName());
                 albumMap.put(album.getAlbumName(),album.getSongUri());
             }
         }
 
         //display song history in the listview
-        ArrayAdapter adapter= new ArrayAdapter<String>(this, android.R.layout.simple_list_item_1, songhistory);
+        ArrayAdapter adapter= new ArrayAdapter<String>(this, android.R.layout.simple_list_item_1, songHistory);
         listview.setAdapter(adapter);
 
         listview.setOnItemClickListener(new AdapterView.OnItemClickListener(){
@@ -92,7 +93,7 @@ public class History extends AppCompatActivity {
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
                 // split the string to get the album
                 String songinfo[] = String.valueOf(parent.getItemAtPosition(position)).split("\\n");
-                selectedsonguri = albumMap.get(songinfo[0]);
+                selectedSongUri = albumMap.get(songinfo[0]);
             }
         });
 
@@ -100,12 +101,12 @@ public class History extends AppCompatActivity {
         change.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                artistbase = !artistbase;
-                if(artistbase){
-                    preferencetv.setText("Recommended tracks based on: artists");
+                artistBase = !artistBase;
+                if(artistBase){
+                    preferenceTV.setText("Recommended tracks based on: artists");
                 }
                 else{
-                    preferencetv.setText("Recommended tracks based on: genre");
+                    preferenceTV.setText("Recommended tracks based on: genre");
                 }
             }
         });
@@ -114,9 +115,9 @@ public class History extends AppCompatActivity {
         playbtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                if(selectedsong!=null){
+                if(selectedSong!=null){
                     Intent intent = new Intent(History.this, MainActivity2.class);
-                    intent.putExtra("songuri", selectedsonguri);
+                    intent.putExtra("songuri", selectedSongUri);
                     startActivity(intent);
                 }
                 else{
