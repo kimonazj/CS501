@@ -10,7 +10,7 @@
         android:id="@+id/find"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="Search for an Album!"
+        android:text="@string/get_new_album"
         android:textStyle="bold"
         android:textSize="24sp"
         android:layout_marginTop="70dp"
@@ -30,9 +30,10 @@
         android:id="@+id/searchResult"
         android:layout_below="@+id/btnCamera"
         android:layout_width="300dp"
-        android:layout_height="150dp"
+        android:layout_height="100dp"
         android:background="@color/cardview_shadow_end_color"
         android:hint="@string/result"
+        android:gravity="center"
         android:textSize="20sp"
         android:layout_centerHorizontal="true"
         android:layout_marginTop="70dp"/>
@@ -52,7 +53,7 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:textSize="24sp"
-        android:text="OR" />
+        android:text="@string/or" />
 
     <LinearLayout
         android:layout_below="@+id/find"
@@ -69,7 +70,7 @@
             android:layout_height="wrap_content"
             android:layout_weight="1"
             android:ems="10"
-            android:hint="Type here and search!"
+            android:hint="@string/type_search"
              />
 
         <Button
@@ -77,7 +78,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_weight="1"
-            android:text="Search" />
+            android:text="@string/search" />
     </LinearLayout>
 
 </RelativeLayout>

@@ -1,16 +1,34 @@
 <resources>
     <string name="app_name">researchProject</string>
-    <string name="project_name">Find My Album</string>
-    <string name="welcome">Welcome!</string>
-    <string name="now_playing">Now Playing a Sample Track from: \n</string>
-    <string name="login_with_google">Login With Google</string>
-    <string name="View_history">View History</string>
-    <string name="play_music">Play Music</string>
-    <string name="pause_music">Pause Music</string>
-    <string name="Upload">Take a New Photo</string>
-    <string name="Find_pic">Browse in local library</string>
-    <string name="result">Search Result</string>
-    <string name="listen">Listen in Spotify</string>
-    <string name="get_new_album">Search for New Album</string>
     <string name="back">Back</string>
+
+<!--  for activity main  -->
+    <string name="project_name">What&apos;s the album</string>
+
+<!--  for welcome page  -->
+    <string name="welcome">Welcome!</string>
+    <string name="hearartist">Hear more from this artist...</string>
+    <string name="play">Play</string>
+    <string name="View_history">View History</string>
+    <string name="get_new_album">Search for a New Album</string>
+
+<!--  for activity main 2 (player)  -->
+    <string name="player">Music Player</string>
+    <string name="now_playing">Now Playing a Sample Track from:</string>
+    <string name="play_music">Play Music</string>
+    <string name="reviews">Reviews</string>
+    <string name="add_review">Add Review</string>
+    <string name="say_something">Say something here...</string>
+
+<!--  for text recog  -->
+    <string name="Upload">Take a New Photo</string>
+    <string name="result">Search Result</string>
+    <string name="or">OR</string>
+    <string name="type_search">Type album&apos;s name here</string>
+    <string name="search">Search</string>
+
+
+<!--  for history  -->
+    <string name="choose_one">Choose one album and play it in Spotify!</string>
+    <string name="play_song">Play the selected song</string>
 </resources>

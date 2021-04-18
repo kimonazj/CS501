@@ -34,14 +34,14 @@
                 android:textSize="16dp"
                 android:textStyle="bold"
                 android:layout_weight="1"
-                android:text="Hear more from this artist" />
+                android:text="@string/hearartist" />
 
             <Button
                 android:id="@+id/playrecom"
                 android:layout_width="wrap_content"
                 android:layout_height="40dp"
                 android:layout_weight="1"
-                android:text="Play" />
+                android:text="@string/play" />
         </LinearLayout>
 
         <TextView
@@ -50,7 +50,8 @@
             android:background="@color/cardview_shadow_end_color"
             android:layout_width="match_parent"
             android:layout_height="100dp"
-            android:text="Welcome to New York \n By Taylor Swift" />
+            android:gravity="center"
+            android:text="Taylor Swift" />
 
     </LinearLayout>
 
