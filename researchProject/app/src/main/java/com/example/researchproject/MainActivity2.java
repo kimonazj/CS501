@@ -724,7 +724,13 @@ public class MainActivity2 extends AppCompatActivity {
             String songUri = activityReference.get().SONG_URI;
 
             History history = activityReference.get().db.historyDao().findByUserId(userId);
-//            activityReference.get().db.historyWithAlbumsDao().insert(new HistoryAlbumCrossRef(history.historyId, songUri));
+
+            HistoryAlbumCrossRef historyAlbumCrossRef = activityReference.get().db.historyAlbumCrossRefDao().findByHistoryIdAndSongUri(history.historyId, songUri);
+            if (historyAlbumCrossRef != null) {
+                activityReference.get().db.historyAlbumCrossRefDao().delete(historyAlbumCrossRef);
+            }
+
+            activityReference.get().db.historyWithAlbumsDao().insert(new HistoryAlbumCrossRef(history.historyId, songUri));
 
             return true;
         }
