@@ -35,7 +35,7 @@
     <!--  for history  -->
     <string name="choose_one">选择一个专辑并播放</string>
     <string name="play_song">播放选中的歌曲</string>
-    <string name="selectedsong">Selected Song</string>
-    <string name="no_song_selected">No Song Selected Yet.</string>
+    <string name="selectedsong">选中的歌曲是</string>
+    <string name="no_song_selected">你还没有选择歌曲</string>
 
 </resources>
