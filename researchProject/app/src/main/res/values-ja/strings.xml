@@ -4,6 +4,7 @@
 
     <!--  for activity main  -->
     <string name="project_name">どんなアルバムですか？</string>
+    <string name="description">そのすごいAPPは</string>
 
     <!--  for welcome page  -->
     <string name="welcome">こんにちは！</string>
