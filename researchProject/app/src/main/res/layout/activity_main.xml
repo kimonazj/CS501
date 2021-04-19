@@ -12,12 +12,12 @@
         android:id="@+id/project_name"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_centerHorizontal="true"
+        android:layout_marginLeft="25dp"
         android:layout_marginTop="150dp"
         android:text="@string/project_name"
         android:textColor="@color/lakeblue"
-        android:textStyle="bold"
-        android:textSize="45sp" />
+        android:textSize="40sp"
+        android:textStyle="bold" />
 
     <com.google.android.gms.common.SignInButton
         android:id="@+id/btnSignIn"
