@@ -3,10 +3,14 @@
     <string name="back">Back</string>
 
 <!--  for activity main  -->
+<<<<<<< HEAD
     <string name="project_name">What&rsquo;'s the album</string>
     <string name="description">This is an amazing app that can recognize a cover of music album and then allows you to listen relevant songs in Spotify.
         You can keep track of previous images and songs with Google!
         Try it now!</string>
+=======
+    <!-- <string name="project_name">What\'s that album</string> -->
+>>>>>>> 428e70ee18a24150fca7d7cc8de8230a8cde6458
 
 <!--  for welcome page  -->
     <string name="welcome">Welcome!</string>

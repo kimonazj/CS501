@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">researchProject</string>
+    <string name="back">뒤로 가기</string>
+
+    <!--  for activity main  -->
+    <string name="project_name">이 앨범은 뭘까</string>
+
+    <!--  for activity main  -->
+    <string name="welcome">환영합니다！</string>
+
+    <!--  for welcome page  -->
+    <string name="hearartist">이 가수의 노래 더 듣기:</string>
+    <string name="play">재생</string>
+    <string name="View_history">기록</string>
+    <string name="get_new_album">새로운 앨범을 찾기</string>
+
+    <!--  for activity main 2 (player)  -->
+    <string name="player">뮤직 플레이어</string>
+    <string name="now_playing">재생중인 샘플 트랙:</string>
+    <string name="play_music">노래 재생</string>
+    <string name="pause_music">노래 일시 정지</string>
+    <string name="reviews">댓글</string>
+    <string name="add_review">댓글 추가</string>
+    <string name="say_something">여기에 작성해주세요...</string>
+    <string name="no_song">검색 결과 없음. 다시 검색 바람?</string>
+    <string name="search_again">오류: 검색 결과가 없습니다.</string>
+
+    <!--  for text recog  -->
+    <string name="Upload">새로운 사진을 찍으주세요</string>
+    <string name="result">검색 결과</string>
+    <string name="or">또는</string>
+    <string name="type_search">앨범 이름을 입력해주세요</string>
+    <string name="search">검색</string>
+
+
+    <!--  for history  -->
+    <string name="choose_one">앨범을 하나 선택해주고 Spotify에 틀기!</string>
+    <string name="play_song">선택한 노래 재생</string>
+</resources>
