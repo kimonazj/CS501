@@ -1,0 +1,37 @@
+<resources>
+    <string name="app_name">researchProject</string>
+    <string name="back">戻る</string>
+
+    <!--  for activity main  -->
+    <string name="project_name">どんなアルバムですか？</string>
+
+    <!--  for welcome page  -->
+    <string name="welcome">こんにちは！</string>
+    <string name="hearartist">このアーティストからもっと聞きませんか：</string>
+    <string name="play">プレイ</string>
+    <string name="View_history">検索履歴</string>
+    <string name="get_new_album">新しいアルバムを検索する</string>
+
+    <!--  for activity main 2 (player)  -->
+    <string name="player">音楽プレイヤー</string>
+    <string name="now_playing">再生中の音楽：</string>
+    <string name="play_music">再生</string>
+    <string name="pause_music">一時停止</string>
+    <string name="reviews">レビュー</string>
+    <string name="add_review">レビューを書きます</string>
+    <string name="say_something">なにを書きませんか</string>
+    <string name="no_song">何も再生できません。検索しますか？</string>
+    <string name="search_again">エラー：検索語にテキストがありません</string>
+
+    <!--  for text recog  -->
+    <string name="Upload">写真を撮って</string>
+    <string name="result">検索の結果</string>
+    <string name="or">または</string>
+    <string name="type_search">アルバムの名前</string>
+    <string name="search">検索する</string>
+
+
+    <!--  for history  -->
+    <string name="choose_one">アルバムを選択して、Spotifyに聞きますよ！</string>
+    <string name="play_song">音楽を再生する</string>
+</resources>
