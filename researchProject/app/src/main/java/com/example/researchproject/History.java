@@ -37,6 +37,7 @@ public class History extends AppCompatActivity {
     ArrayList<String> songHistory;
     Boolean artistBase; // default is false => genre
     ListView listview;
+    TextView selectedSongItem;
 
     String selectedSong;
     String selectedSongUri;
@@ -63,11 +64,11 @@ public class History extends AppCompatActivity {
 
         account = GoogleSignIn.getLastSignedInAccount(this);
 
-        // initiate buttons
+        // initiate UI components
         playbtn = findViewById(R.id.playsong);
         back = findViewById(R.id.back);
-
         listview = findViewById(R.id.listview);
+        selectedSongItem = findViewById(R.id.selectedsongitem);
 
         handler = new Handler(Looper.getMainLooper());
 
@@ -93,6 +94,8 @@ public class History extends AppCompatActivity {
                 selectedAlbum = itemInfo[1].replace("Album: ", "");
 
                 selectedSongUri = albumMap.get(selectedSong);
+
+                selectedSongItem.setText(String.valueOf(parent.getItemAtPosition(position)));
             }
         });
 

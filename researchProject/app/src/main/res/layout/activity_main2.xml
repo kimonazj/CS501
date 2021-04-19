@@ -35,13 +35,13 @@
         android:id="@+id/album_name"
         android:layout_below="@+id/select_song"
         android:layout_width="300dp"
-        android:layout_height="80dp"
+        android:layout_height="50dp"
         android:layout_marginTop="10dp"
         android:layout_centerHorizontal="true"
         android:gravity="center"
         android:textColor="@color/lakeblue"
         android:background="@color/lightgray"
-        android:text = "Welcome to New York \n By Taylor Swift"
+        android:text = "Welcome to New York from 1989 \n By Taylor Swift"
         android:textAlignment="center"
         android:textSize="15sp" />
 
@@ -72,6 +72,7 @@
                 android:id="@+id/reviews"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
+                android:layout_marginRight="40dp"
                 android:textColor="@color/lakeblue"
                 android:layout_gravity="bottom"
                 android:text="@string/reviews"
@@ -80,7 +81,7 @@
                 android:id="@+id/addReview"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_marginLeft="80dp"
+                android:layout_marginLeft="40dp"
                 android:text="@string/add_review" />
 
         </LinearLayout>
@@ -89,7 +90,7 @@
         <EditText
             android:id="@+id/newReview"
             android:layout_width="300dp"
-            android:layout_height="70dp"
+            android:layout_height="50dp"
             android:layout_marginTop="5dp"
             android:background="@color/lightgray"
             android:hint="@string/say_something"
@@ -98,9 +99,9 @@
 
         <ListView
             android:id="@+id/reviewlist"
-            android:textSize="14sp"
             android:layout_width="match_parent"
-            android:layout_height="100dp" />
+            android:layout_height="match_parent"
+            android:textSize="14sp" />
 
     </LinearLayout>
 

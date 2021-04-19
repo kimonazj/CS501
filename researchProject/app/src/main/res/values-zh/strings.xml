@@ -4,10 +4,11 @@
     <string name="back">返回</string>
 
     <!--  for activity main  -->
-    <string name="welcome">欢迎！</string>
+    <string name="project_name">专辑招领所</string>
     <string name="description">你只需要拍专辑封面，我们自动帮你识别文字！还可以存档搜索历史！不会英文也能享受英文歌曲哦！快来试试吧！</string>
 
     <!--  for welcome page  -->
+    <string name="welcome">欢迎！</string>
     <string name="hearartist">听听这个歌手的其他专辑吧！</string>
     <string name="play">播放</string>
     <string name="View_history">搜索历史</string>
@@ -34,6 +35,7 @@
     <!--  for history  -->
     <string name="choose_one">选择一个专辑并播放</string>
     <string name="play_song">播放选中的歌曲</string>
-    <string name="project_name">专辑招领所</string>
+    <string name="selectedsong">Selected Song</string>
+    <string name="no_song_selected">No Song Selected Yet.</string>
 
 </resources>

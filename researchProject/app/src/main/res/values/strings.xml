@@ -37,4 +37,6 @@
 <!--  for history  -->
     <string name="choose_one">Choose one album and play it in Spotify!</string>
     <string name="play_song">Play the selected song</string>
+    <string name="selectedsong">Selected Song</string>
+    <string name="no_song_selected">No Song Selected Yet.</string>
 </resources>

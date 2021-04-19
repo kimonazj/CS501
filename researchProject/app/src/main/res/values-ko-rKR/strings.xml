@@ -40,4 +40,6 @@
     <!--  for history  -->
     <string name="choose_one">앨범을 하나 선택해주고 Spotify에 틀기!</string>
     <string name="play_song">선택한 노래 재생</string>
+    <string name="selectedsong">Selected Song</string>
+    <string name="no_song_selected">No Song Selected Yet.</string>
 </resources>

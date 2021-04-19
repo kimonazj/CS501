@@ -24,18 +24,34 @@
         android:layout_centerHorizontal="true"
         />
 
+    <TextView
+        android:id = "@+id/selectedsong"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/listview"
+        android:layout_marginTop="10dp"
+        android:gravity="center"
+        android:textSize="20sp"
+        android:textStyle="bold"
+        android:text="@string/selectedsong"/>
+
+    <TextView
+        android:id = "@+id/selectedsongitem"
+        android:layout_width="match_parent"
+        android:layout_height="50dp"
+        android:layout_below="@+id/selectedsong"
+        android:layout_marginTop="5dp"
+        android:gravity="center"
+        android:text="@string/no_song_selected"/>
+
     <Button
         android:id="@+id/playsong"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_below="@+id/listview"
+        android:layout_below="@+id/selectedsongitem"
         android:layout_centerHorizontal="true"
         android:layout_marginTop="10dp"
         android:text="@string/play_song" />
-
-
-
-
 
     <Button
         android:id="@+id/back"
