@@ -61,10 +61,12 @@ public class Welcome extends AppCompatActivity {
         recomsong = (TextView)findViewById(R.id.recomsong);
 
         // create instance of database
-        db = Room.databaseBuilder(getApplicationContext(), AppDatabase.class, "project_db_v7").allowMainThreadQueries().build();
+        db = Room.databaseBuilder(getApplicationContext(), AppDatabase.class, "project_db_v8").allowMainThreadQueries().build();
 
+        // get signedin account
         account = GoogleSignIn.getLastSignedInAccount(this);
 
+        // initialize songHistory 
         songhistory = new ArrayList<String>();
 
         handler = new Handler(Looper.getMainLooper());
@@ -75,6 +77,8 @@ public class Welcome extends AppCompatActivity {
         newalbum.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+
+                // redirect to TextRecognitionActivity
                 Intent newAlbum = new Intent(Welcome.this, TextRecognitionActivity.class);
                 startActivity(newAlbum);
             }
@@ -85,6 +89,7 @@ public class Welcome extends AppCompatActivity {
             @Override
             public void onClick(View v) {
                 Intent play = new Intent(Welcome.this, MainActivity2.class);
+                // pass recommended artist to MainActivity2
                 play.putExtra("artist",recomstring);
                 startActivity(play);
             }
@@ -111,10 +116,15 @@ public class Welcome extends AppCompatActivity {
             recomsong.setText("Taylor Swift");
         }
         else {
+            // iterate through the albums and add artists to songHistory
             for (Album album : historyWithAlbums.albums) {
                 songhistory.add(album.getArtistName());
             }
+
+            // get the most common artist
             recomstring = mostCommon(songhistory);
+
+            // set artist as recommended
             recomsong.setText(recomstring);
         }
     }
@@ -151,8 +161,10 @@ public class Welcome extends AppCompatActivity {
         // doInBackground methods runs on a worker thread
         @Override
         protected HistoryWithAlbums doInBackground(Void... objs) {
+            // get historywithalbums from userId
             HistoryWithAlbums historyWithAlbums = activityReference.get().db.historyWithAlbumsDao().getHistoryWithAlbums(userId);
 
+            // use an extra thread to set historyWithAlbums in the activity UI
             activityReference.get().handler.post(new Runnable() {
                 @Override
                 public void run() {
@@ -166,7 +178,6 @@ public class Welcome extends AppCompatActivity {
         // onPostExecute runs on main thread
         @Override
         protected void onPostExecute(HistoryWithAlbums historyWithAlbums) {
-            activityReference.get().historyWithAlbums = historyWithAlbums;
         }
 
     }

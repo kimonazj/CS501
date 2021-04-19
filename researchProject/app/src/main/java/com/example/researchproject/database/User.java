@@ -14,13 +14,9 @@ public class User {
     @ColumnInfo(name = "name")
     private String name;
 
-    @ColumnInfo(name = "ifArtist")
-    private Boolean ifArtist;
-
-    public User(String userId, String name, Boolean ifArtist) {
+    public User(String userId, String name) {
         this.userId = userId;
         this.name = name;
-        this.ifArtist = ifArtist;
     }
 
     public String getUserId() {
@@ -29,9 +25,5 @@ public class User {
 
     public String getName() {
         return name;
-    }
-
-    public Boolean getIfArtist() {
-        return ifArtist;
     }
 }

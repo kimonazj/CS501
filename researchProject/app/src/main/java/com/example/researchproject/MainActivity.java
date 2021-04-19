@@ -60,7 +60,7 @@ public class MainActivity extends AppCompatActivity {
         });
 
         // create instance of database
-        db = Room.databaseBuilder(getApplicationContext(), AppDatabase.class, "project_db_v7").allowMainThreadQueries().build();
+        db = Room.databaseBuilder(getApplicationContext(), AppDatabase.class, "project_db_v8").allowMainThreadQueries().build();
 
     }
     @Override
@@ -100,8 +100,7 @@ public class MainActivity extends AppCompatActivity {
             String userId = account.getEmail();
 
             // if userId is not registered in db, registerUser
-            // initialize ifArtist = false
-            User user = new User(userId, account.getDisplayName(), false);
+            User user = new User(userId, account.getDisplayName());
             new registerUser(MainActivity.this, user).execute();
 
             // Signed in successfully, show authenticated UI.

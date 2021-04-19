@@ -59,7 +59,7 @@ public class History extends AppCompatActivity {
         setContentView(R.layout.history);
 
         // create instance of database
-        db = Room.databaseBuilder(getApplicationContext(), AppDatabase.class, "project_db_v7").allowMainThreadQueries().build();
+        db = Room.databaseBuilder(getApplicationContext(), AppDatabase.class, "project_db_v8").allowMainThreadQueries().build();
 
         account = GoogleSignIn.getLastSignedInAccount(this);
 
@@ -168,6 +168,7 @@ public class History extends AppCompatActivity {
 
             HistoryWithAlbums historyWithAlbums = activityReference.get().db.historyWithAlbumsDao().getHistoryWithAlbums(userId);
 
+            // use an extra thread to display the reviews in the activity UI
             activityReference.get().handler.post(new Runnable() {
                 @Override
                 public void run() {
@@ -181,7 +182,6 @@ public class History extends AppCompatActivity {
         // onPostExecute runs on main thread
         @Override
         protected void onPostExecute(HistoryWithAlbums historyWithAlbums) {
-            activityReference.get().historyWithAlbums = historyWithAlbums;
         }
 
     }
