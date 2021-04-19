@@ -4,7 +4,7 @@
 
     <!--  for activity main  -->
     <string name="project_name">どんなアルバムですか？</string>
-    <string name="description">そのすごいAPPは</string>
+    <string name="description">そのすごいAPPはアルバムカバーの写真を撮って、Spotifyにアルバムを検索したり、音楽を再生したりします！</string>
 
     <!--  for welcome page  -->
     <string name="welcome">こんにちは！</string>
