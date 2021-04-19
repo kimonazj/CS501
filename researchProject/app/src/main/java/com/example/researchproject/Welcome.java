@@ -71,6 +71,7 @@ public class Welcome extends AppCompatActivity {
 
         handler = new Handler(Looper.getMainLooper());
 
+        // get history
         new Welcome.retrieveHistory(Welcome.this, account.getEmail()).execute();
 
         //search a new album
