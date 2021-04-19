@@ -3,11 +3,11 @@
     <string name="back">Back</string>
 
 <!--  for activity main  -->
-    <string name="project_name">What&apos;s the album</string>
+    <string name="project_name">What\'s the album</string>
 
 <!--  for welcome page  -->
     <string name="welcome">Welcome!</string>
-    <string name="hearartist">Hear more from this artist...</string>
+    <string name="hearartist">Hear more from this artist:</string>
     <string name="play">Play</string>
     <string name="View_history">View History</string>
     <string name="get_new_album">Search for a New Album</string>
@@ -16,6 +16,7 @@
     <string name="player">Music Player</string>
     <string name="now_playing">Now Playing a Sample Track from:</string>
     <string name="play_music">Play Music</string>
+    <string name="pause_music">Pause Music</string>
     <string name="reviews">Reviews</string>
     <string name="add_review">Add Review</string>
     <string name="say_something">Say something here...</string>
@@ -26,7 +27,7 @@
     <string name="Upload">Take a New Photo</string>
     <string name="result">Search Result</string>
     <string name="or">OR</string>
-    <string name="type_search">Type album&apos;s name here</string>
+    <string name="type_search">Type name of album here</string>
     <string name="search">Search</string>
 
 

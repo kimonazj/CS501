@@ -33,11 +33,9 @@ import java.util.Map;
 
 public class History extends AppCompatActivity {
     Button playbtn;
-    Button change;
     Button back;
     ArrayList<String> songHistory;
     Boolean artistBase; // default is false => genre
-    TextView preferenceTV;
     ListView listview;
 
     String selectedSong;
@@ -67,10 +65,8 @@ public class History extends AppCompatActivity {
 
         // initiate buttons
         playbtn = findViewById(R.id.playsong);
-        change = findViewById(R.id.changebtn);
         back = findViewById(R.id.back);
 
-        preferenceTV = findViewById(R.id.recomtv);
         listview = findViewById(R.id.listview);
 
         handler = new Handler(Looper.getMainLooper());
@@ -97,20 +93,6 @@ public class History extends AppCompatActivity {
                 selectedAlbum = itemInfo[1].replace("Album: ", "");
 
                 selectedSongUri = albumMap.get(selectedSong);
-            }
-        });
-
-        // change recommendation preference
-        change.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                artistBase = !artistBase;
-                if(artistBase){
-                    preferenceTV.setText("Recommended tracks based on: artists");
-                }
-                else{
-                    preferenceTV.setText("Recommended tracks based on: genre");
-                }
             }
         });
 

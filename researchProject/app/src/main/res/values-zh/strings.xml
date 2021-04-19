@@ -2,25 +2,36 @@
 <resources>
     <string name="app_name">researchProject</string>
     <string name="back">返回</string>
+
+    <!--  for activity main  -->
     <string name="welcome">欢迎！</string>
+
+    <!--  for welcome page  -->
     <string name="hearartist">听听这个歌手的其他专辑吧！</string>
     <string name="play">播放</string>
     <string name="View_history">搜索历史</string>
     <string name="get_new_album">搜索新的专辑</string>
+
+    <!--  for activity main 2 (player)  -->
     <string name="player">音乐播放器</string>
     <string name="now_playing">正在播放：</string>
     <string name="play_music">播放</string>
+    <string name="pause_music">暂停</string>
     <string name="reviews">评论</string>
     <string name="add_review">添加评论</string>
     <string name="say_something">说点什么吧</string>
+    <string name="no_song">播放器目前没有音乐。试试搜寻个专辑吧?</string>
+    <string name="search_again">错误: 找不到搜索词</string>
+
+    <!--  for text recog  -->
     <string name="Upload">拍摄一张新的照片</string>
     <string name="result">搜索结果</string>
     <string name="or">或者</string>
     <string name="type_search">专辑名</string>
     <string name="search">搜索</string>
+
+    <!--  for history  -->
     <string name="choose_one">选择一个专辑并播放</string>
     <string name="play_song">播放选中的歌曲</string>
     <string name="project_name">专辑招领所</string>
-    <string name="no_song">播放器目前没有音乐。试试搜寻个专辑吧?</string>
-    <string name="search_again">错误: 找不到搜索词</string>
 </resources>
