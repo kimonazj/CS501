@@ -17,7 +17,7 @@
 
 <!--  for activity main 2 (player)  -->
     <string name="player">Music Player</string>
-    <string name="now_playing">Now Playing a Sample Track from:</string>
+    <string name="now_playing">Now Playing:</string>
     <string name="play_music">Play Music</string>
     <string name="pause_music">Pause Music</string>
     <string name="reviews">Reviews</string>
