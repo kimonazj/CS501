@@ -124,24 +124,23 @@ public class MainActivity2 extends AppCompatActivity {
         btnPlaySong = (Button) findViewById(R.id.btnPlaySong);
         searchnew = (Button) findViewById(R.id.get_new_album);
         back = (Button)findViewById(R.id.back);
-
         newReview = (EditText) findViewById(R.id.newReview);
         addReview = (Button) findViewById(R.id.addReview);
-
         reviewListView = (ListView)findViewById(R.id.reviewlist);
 
+        // Store the current user account into a variable
         account = GoogleSignIn.getLastSignedInAccount(this);
 
+        // Instantiate handler for some worker-thread activities
         handler = new Handler(Looper.getMainLooper());
 
         // create instance of database
         db = Room.databaseBuilder(getApplicationContext(), AppDatabase.class, "project_db_v5").allowMainThreadQueries().build();
 
-
         // disable button until the remote spotify api is connected
         btnPlaySong.setEnabled(false);
 
-        // Set up our button to play song (after the API calls return of course)
+        // Set up our button to play song (after the API calls return)
         btnPlaySong.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -162,6 +161,7 @@ public class MainActivity2 extends AppCompatActivity {
             }
         });
 
+        //
         addReview.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -212,8 +212,17 @@ public class MainActivity2 extends AppCompatActivity {
 
         if(album_output != null){
 
-            // begin our sequence of API calls, starting with our call for an access token.
-            startAlbumSearch();
+            if (album_output.equals("")) {
+                // if any error from the text recognition results in an empty string,
+                // notify user with a Toast
+                Toast.makeText(this, R.string.search_again, Toast.LENGTH_SHORT);
+
+                showAlbumName.setText(R.string.no_song);
+
+            } else {
+                // begin our sequence of API calls, starting with our call for an access token.
+                startAlbumSearch();
+            }
 
         }else if(artist_output != null){
 
@@ -228,11 +237,9 @@ public class MainActivity2 extends AppCompatActivity {
             ALBUM_NAME = history_album_output;
             SONG_NAME = history_song_output;
 
-            // display the album, song and artist names
-            showAlbumName.setText(SONG_NAME + " from " + ALBUM_NAME + "\n by " + ALBUM_ARTIST);
-
-            // get reviews
-            new retrieveReviews(this).execute();
+            // call the method to set our player to the URI
+            // and make relevant UI and Database updates
+            setPlayerToURI();
 
         }else{
 
@@ -256,8 +263,6 @@ public class MainActivity2 extends AppCompatActivity {
                     public void onConnected(SpotifyAppRemote spotifyAppRemote) {
                         mSpotifyAppRemote = spotifyAppRemote;
                         Log.d("MainActivity2", "Connected! Yay!");
-
-                        btnPlaySong.setEnabled(true);
                     }
 
                     @Override
@@ -289,18 +294,39 @@ public class MainActivity2 extends AppCompatActivity {
         history_artist_output = intent.getStringExtra("historyArtist");
     }
 
+    private void setPlayerToURI() {
+        // adjust UI components to display song information and enable play button
+        showAlbumName.setText(SONG_NAME + " from " + ALBUM_NAME + "\n by " + ALBUM_ARTIST);
+        btnPlaySong.setEnabled(true);
+
+        // add this new album to our database
+        Album album = new Album(SONG_URI, ALBUM_NAME, SONG_NAME, ALBUM_ARTIST);
+        new registerAlbum(MainActivity2.this, album).execute();
+
+        // add album to history
+        // registerAlbumToHistory
+        new MainActivity2.registerAlbumToHistory(MainActivity2.this, account.getEmail()).execute();
+
+        // get reviews
+        new retrieveReviews(this).execute();
+    }
+
     private void startAlbumSearch() {
+        // begin our search by first getting the access token
         getAccessToken(GET_ALBUM_ID, album_output);
     }
 
     private void startRecommendedArtistTrackSearch() {
+        // begin our search by first getting the access token
         getAccessToken(GET_ARTIST_ID, artist_output);
     }
 
     private void setReviewListView(List<Review> reviewList) {
 
+        // assign reviewList attribute to the input reviewList
         this.reviewList = reviewList;
 
+        // if no reviews exist for the current album, make a new review list
         if (reviewList == null) {
             reviewList = new ArrayList<Review>();
         }
@@ -418,6 +444,7 @@ public class MainActivity2 extends AppCompatActivity {
                 ALBUM_ARTIST = album_data.getJSONArray("artists").getJSONObject(0).getString("name");
                 ALBUM_NAME = album_data.getString("name");
 
+                // find the album id to use in the next api call
                 String album_id = album_data.getString("id");
                 volleyGetAlbumSong(album_id);
             } catch (JSONException e) {
@@ -470,21 +497,8 @@ public class MainActivity2 extends AppCompatActivity {
                 SONG_NAME = song_name;
                 SONG_URI = received_uri;
 
-                // set our textView to display the current song.
-                showAlbumName.setText(SONG_NAME + " from " + ALBUM_NAME + "\n by " + ALBUM_ARTIST);
-
-                // add this new album to our database
-                //Album album = new Album("example", "exampleagain", "wowexample");
-                Album album = new Album(SONG_URI, ALBUM_NAME, SONG_NAME, ALBUM_ARTIST);
-                new registerAlbum(MainActivity2.this, album).execute();
-
-
-                // add album to history
-                // registerAlbumToHistory
-                new MainActivity2.registerAlbumToHistory(MainActivity2.this, account.getEmail()).execute();
-
-                // get reviews
-                new retrieveReviews(this).execute();
+                // call method to adjust the UI and database components
+                setPlayerToURI();
 
             } catch (JSONException e) {
                 e.printStackTrace();
@@ -496,7 +510,7 @@ public class MainActivity2 extends AppCompatActivity {
             if (error.networkResponse.statusCode == 401) {
                 getAccessToken(GET_ALBUM_TRACK, input);
             } else {
-                // irrecoverable errors. log the error for debugging.
+                // irrecoverable error. log the error for debugging.
                 Log.d("GetRequest", error.toString());
             }
         })
@@ -543,9 +557,10 @@ public class MainActivity2 extends AppCompatActivity {
                 JSONObject artists = (JSONObject) response.get("artists");
                 JSONObject first_artist_data = artists.getJSONArray("items").getJSONObject(0);
 
-                // get album name and album artist
+                // get album_artist
                 ALBUM_ARTIST = first_artist_data.getString("name");
 
+                // find the artist id to use in our next api call
                 String artist_id = first_artist_data.getString("id");
                 volleyGetRandomArtistTrack(artist_id);
 
@@ -594,7 +609,7 @@ public class MainActivity2 extends AppCompatActivity {
                 JSONArray top_tracks = response.getJSONArray("tracks");
                 JSONObject random_track = top_tracks.getJSONObject(index);
 
-                // get song name and uri
+                // get album name, song name and uri
                 String received_album_name = random_track.getJSONObject("album").getString("name");
                 String received_uri = random_track.getString("uri");
                 String song_name = random_track.getString("name");
@@ -603,21 +618,8 @@ public class MainActivity2 extends AppCompatActivity {
                 SONG_NAME = song_name;
                 SONG_URI = received_uri;
 
-                // set our textView to display the current song.
-                showAlbumName.setText(SONG_NAME + " from " + ALBUM_NAME + "\n by " + ALBUM_ARTIST);
-
-                // add this new album to our database
-                //Album album = new Album("example", "exampleagain", "wowexample");
-                Album album = new Album(SONG_URI, ALBUM_NAME, SONG_NAME, ALBUM_ARTIST);
-                new registerAlbum(MainActivity2.this, album).execute();
-
-
-                // add album to history
-                // registerAlbumToHistory
-                new MainActivity2.registerAlbumToHistory(MainActivity2.this, account.getEmail()).execute();
-
-                // get reviews
-                new retrieveReviews(this).execute();
+                // call method to adjust the UI and database components
+                setPlayerToURI();
 
             } catch (JSONException e) {
                 e.printStackTrace();
@@ -662,7 +664,7 @@ public class MainActivity2 extends AppCompatActivity {
         // doInBackground methods runs on a worker thread
         @Override
         protected Boolean doInBackground(Void... objs) {
-            // if album doesn't exist, create new album
+            // if album doesn't exist, create new album and register it into the database
             if (activityReference.get().db.albumDao().findBySongUri(album.getSongUri()) == null) {
                 activityReference.get().db.albumDao().insert(album);
             }
@@ -691,6 +693,7 @@ public class MainActivity2 extends AppCompatActivity {
         @Override
         protected Boolean doInBackground(Void... objs) {
             try {
+                // register the review into the review database
                 activityReference.get().db.reviewDao().insert(review);
                 return true;
             } catch (Exception e) {
@@ -721,15 +724,20 @@ public class MainActivity2 extends AppCompatActivity {
         @Override
         protected Boolean doInBackground(Void... objs) {
 
+            // retrieve current song URI from the activity
             String songUri = activityReference.get().SONG_URI;
 
+            // create a new entry to enter into our cross reference table
             History history = activityReference.get().db.historyDao().findByUserId(userId);
-
             HistoryAlbumCrossRef historyAlbumCrossRef = activityReference.get().db.historyAlbumCrossRefDao().findByHistoryIdAndSongUri(history.historyId, songUri);
+
+            // if an entry with the same primary keys already exist, delete the existing entry
+            // then reinsert it so that it would display on the top of the history page.
             if (historyAlbumCrossRef != null) {
                 activityReference.get().db.historyAlbumCrossRefDao().delete(historyAlbumCrossRef);
             }
 
+            // insert/reinsert the entry and return
             activityReference.get().db.historyWithAlbumsDao().insert(new HistoryAlbumCrossRef(history.historyId, songUri));
 
             return true;
@@ -755,24 +763,20 @@ public class MainActivity2 extends AppCompatActivity {
         @Override
         protected List<Review> doInBackground(Void... objs) {
             try {
-                if (activityReference.get() != null) {
-                    Log.d("MainActivity2", "doInBackground for retrieveReview");
+                Log.d("MainActivity2", "doInBackground for retrieveReview");
 
-                    List<Review> retrievedReviews = activityReference.get().db.reviewDao().findBySongUri(activityReference.get().SONG_URI);
+                // retrieve reviews from the database
+                List<Review> retrievedReviews = activityReference.get().db.reviewDao().findBySongUri(activityReference.get().SONG_URI);
 
-                    activityReference.get().handler.post(new Runnable() {
-                        @Override
-                        public void run() {
-                            activityReference.get().setReviewListView(retrievedReviews);
-                        }
-                    });
+                // use an extra thread to display the reviews in the activity UI
+                activityReference.get().handler.post(new Runnable() {
+                    @Override
+                    public void run() {
+                        activityReference.get().setReviewListView(retrievedReviews);
+                    }
+                });
 
-                    return retrievedReviews;
-                }
-                else {
-                    //Toast.makeText(context, "Review is Null", Toast.LENGTH_SHORT);
-                    return null;
-                }
+                return retrievedReviews;
             } catch (Exception e) {
                 Log.d("MainActivity2", "Encountered following Error in retrieveReview: " + e);
                 return null;
@@ -782,10 +786,6 @@ public class MainActivity2 extends AppCompatActivity {
         // onPostExecute runs on main thread
         @Override
         protected void onPostExecute(List<Review> reviews) {
-
-            // set review list
-            Log.d("MainActivity2", "Review has been retrieved");
-            activityReference.get().reviewList = reviews;
         }
 
     }

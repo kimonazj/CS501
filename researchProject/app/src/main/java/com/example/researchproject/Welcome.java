@@ -3,6 +3,8 @@ package com.example.researchproject;
 import android.content.Intent;
 import android.os.AsyncTask;
 import android.os.Bundle;
+import android.os.Handler;
+import android.os.Looper;
 import android.view.View;
 import android.widget.Button;
 import android.widget.TextView;
@@ -42,6 +44,9 @@ public class Welcome extends AppCompatActivity {
     // get signedin user
     GoogleSignInAccount account;
 
+    // handler for some thread processing
+    Handler handler;
+
     private HistoryWithAlbums historyWithAlbums;
 
     @Override
@@ -62,20 +67,9 @@ public class Welcome extends AppCompatActivity {
 
         songhistory = new ArrayList<String>();
 
-        new Welcome.retrieveHistory(Welcome.this, account.getEmail()).execute();
+        handler = new Handler(Looper.getMainLooper());
 
-        if (historyWithAlbums == null) {
-            // if there is no history, default song will be Taylor Swift's welcome to new york
-            recomstring = "Taylor Swift";
-            recomsong.setText("Taylor Swift");
-        }
-        else {
-            for (Album album : historyWithAlbums.albums) {
-                songhistory.add(album.getArtistName());
-            }
-            recomstring = mostCommon(songhistory);
-            recomsong.setText(recomstring);
-        }
+        new Welcome.retrieveHistory(Welcome.this, account.getEmail()).execute();
 
         //search a new album
         newalbum.setOnClickListener(new View.OnClickListener() {
@@ -107,6 +101,22 @@ public class Welcome extends AppCompatActivity {
                 startActivity(history);
             }
         });
+    }
+
+    private void setRecommendedArtist(HistoryWithAlbums historyWithAlbums) {
+        this.historyWithAlbums = historyWithAlbums;
+        if (historyWithAlbums == null || historyWithAlbums.albums.size() == 0) {
+            // if there is no history, default song will be Taylor Swift's welcome to new york
+            recomstring = "Taylor Swift";
+            recomsong.setText("Taylor Swift");
+        }
+        else {
+            for (Album album : historyWithAlbums.albums) {
+                songhistory.add(album.getArtistName());
+            }
+            recomstring = mostCommon(songhistory);
+            recomsong.setText(recomstring);
+        }
     }
 
     public static <T> T mostCommon(ArrayList<T> list) {
@@ -142,6 +152,14 @@ public class Welcome extends AppCompatActivity {
         @Override
         protected HistoryWithAlbums doInBackground(Void... objs) {
             HistoryWithAlbums historyWithAlbums = activityReference.get().db.historyWithAlbumsDao().getHistoryWithAlbums(userId);
+
+            activityReference.get().handler.post(new Runnable() {
+                @Override
+                public void run() {
+                    activityReference.get().setRecommendedArtist(historyWithAlbums);
+                }
+            });
+
             return historyWithAlbums;
         }
 

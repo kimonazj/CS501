@@ -19,10 +19,13 @@
     <string name="reviews">Reviews</string>
     <string name="add_review">Add Review</string>
     <string name="say_something">Say something here...</string>
+    <string name="no_song">No Songs Loaded. Try Searching Again?</string>
+    <string name="search_again">Error: No text was recognized from the image.</string>
 
 <!--  for text recog  -->
     <string name="Upload">Take a New Photo</string>
     <string name="result">Search Result</string>
+<<<<<<< Updated upstream
     <string name="or">OR</string>
     <string name="type_search">Type album&apos;s name here</string>
     <string name="search">Search</string>
@@ -31,4 +34,5 @@
 <!--  for history  -->
     <string name="choose_one">Choose one album and play it in Spotify!</string>
     <string name="play_song">Play the selected song</string>
+>>>>>>> Stashed changes
 </resources>
