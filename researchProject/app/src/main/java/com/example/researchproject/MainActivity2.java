@@ -144,15 +144,23 @@ public class MainActivity2 extends AppCompatActivity {
         btnPlaySong.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+
                 if (SONG_URI != null) {
                     Log.d("MainActivity2", "Current Song URI is: " + SONG_URI);
+
+                    // if the song uri is found and it is our first time playing the song,
+                    // then assign it to our spotify player and play it
                     if (btnPlaySong.getText().toString().equals(getString(R.string.play_music)) && FIRST_PLAY == false){
                         mSpotifyAppRemote.getPlayerApi().play(SONG_URI);
                         FIRST_PLAY = true;
                         btnPlaySong.setText(R.string.pause_music);
+
+                    // if the song is currently paused, play/resume music
                     } else if (btnPlaySong.getText().toString().equals(getString(R.string.play_music))) {
                         mSpotifyAppRemote.getPlayerApi().resume();
                         btnPlaySong.setText(R.string.pause_music);
+
+                    // if the song is already playing, pause the music
                     } else {
                         mSpotifyAppRemote.getPlayerApi().pause();
                         btnPlaySong.setText(R.string.play_music);
