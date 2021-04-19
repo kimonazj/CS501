@@ -7,6 +7,9 @@ import androidx.room.Relation;
 import java.util.ArrayList;
 import java.util.List;
 
+/**
+ * displays HistoryAlbumCrossRef as a comprehensive entity
+ */
 public class HistoryWithAlbums {
     @Embedded public History history;
     @Relation(

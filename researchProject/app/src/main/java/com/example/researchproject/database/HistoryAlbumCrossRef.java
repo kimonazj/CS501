@@ -4,6 +4,9 @@ import androidx.annotation.NonNull;
 import androidx.room.Entity;
 import androidx.room.PrimaryKey;
 
+/**
+ * Keeps track of albums in history
+ */
 @Entity
 public class HistoryAlbumCrossRef {
     @PrimaryKey(autoGenerate = true)
