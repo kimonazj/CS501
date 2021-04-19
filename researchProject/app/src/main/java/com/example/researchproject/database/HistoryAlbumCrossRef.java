@@ -2,9 +2,14 @@ package com.example.researchproject.database;
 
 import androidx.annotation.NonNull;
 import androidx.room.Entity;
+import androidx.room.PrimaryKey;
 
-@Entity(primaryKeys = {"historyId", "songUri"})
+@Entity
 public class HistoryAlbumCrossRef {
+    @PrimaryKey(autoGenerate = true)
+    @NonNull
+    public int historyAlbumCrossRefId;
+
     @NonNull
     public int historyId;
 
@@ -16,4 +21,7 @@ public class HistoryAlbumCrossRef {
         this.songUri = songUri;
     }
 
+    public int getHistoryAlbumCrossRefId() {
+        return historyAlbumCrossRefId;
+    }
 }

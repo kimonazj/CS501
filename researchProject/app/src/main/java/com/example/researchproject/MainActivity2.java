@@ -135,7 +135,7 @@ public class MainActivity2 extends AppCompatActivity {
         handler = new Handler(Looper.getMainLooper());
 
         // create instance of database
-        db = Room.databaseBuilder(getApplicationContext(), AppDatabase.class, "project_db_v5").allowMainThreadQueries().build();
+        db = Room.databaseBuilder(getApplicationContext(), AppDatabase.class, "project_db_v7").allowMainThreadQueries().build();
 
         // disable button until the remote spotify api is connected
         btnPlaySong.setEnabled(false);

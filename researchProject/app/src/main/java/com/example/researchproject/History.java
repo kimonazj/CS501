@@ -59,7 +59,7 @@ public class History extends AppCompatActivity {
         setContentView(R.layout.history);
 
         // create instance of database
-        db = Room.databaseBuilder(getApplicationContext(), AppDatabase.class, "project_db_v5").allowMainThreadQueries().build();
+        db = Room.databaseBuilder(getApplicationContext(), AppDatabase.class, "project_db_v7").allowMainThreadQueries().build();
 
         account = GoogleSignIn.getLastSignedInAccount(this);
 
@@ -134,7 +134,9 @@ public class History extends AppCompatActivity {
             albumMap.put("Welcome To New York", "https://open.spotify.com/track/6qnM0XXPZOINWA778uNqQ9?si=f517332dcd7344f2");
         }
         else {
-            for (int idx = historyWithAlbums.albums.size()-1 ; idx >= 0 ; idx--) {
+
+            int size = historyWithAlbums.albums.size()-1;
+            for (int idx = size ; idx >= 0 ; idx--) {
                 Album album = historyWithAlbums.albums.get(idx);
                 songHistory.add(album.getSongName() + " by " + album.getArtistName() + "\nAlbum: " + album.getAlbumName()+"\n");
                 albumMap.put(album.getSongName(),album.getSongUri());

@@ -61,7 +61,7 @@ public class Welcome extends AppCompatActivity {
         recomsong = (TextView)findViewById(R.id.recomsong);
 
         // create instance of database
-        db = Room.databaseBuilder(getApplicationContext(), AppDatabase.class, "project_db_v5").allowMainThreadQueries().build();
+        db = Room.databaseBuilder(getApplicationContext(), AppDatabase.class, "project_db_v7").allowMainThreadQueries().build();
 
         account = GoogleSignIn.getLastSignedInAccount(this);
 
