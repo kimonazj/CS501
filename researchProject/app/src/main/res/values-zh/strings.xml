@@ -21,4 +21,6 @@
     <string name="choose_one">选择一个专辑并播放</string>
     <string name="play_song">播放选中的歌曲</string>
     <string name="project_name">专辑招领所</string>
+    <string name="no_song">播放器目前没有音乐。试试搜寻个专辑吧?</string>
+    <string name="search_again">错误: 找不到搜索词</string>
 </resources>
