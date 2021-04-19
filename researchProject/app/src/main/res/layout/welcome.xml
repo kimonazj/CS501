@@ -9,6 +9,7 @@
         android:layout_height="wrap_content"
         android:layout_marginTop="80dp"
         android:layout_centerHorizontal="true"
+        android:textColor="@color/lakeblue"
         android:textStyle="bold"
         android:text="@string/welcome"
         android:textSize="30sp" />
@@ -34,6 +35,7 @@
                 android:textSize="16dp"
                 android:textStyle="bold"
                 android:layout_weight="1"
+                android:textColor="@color/lightblue"
                 android:text="@string/hearartist" />
 
             <Button
@@ -47,10 +49,11 @@
         <TextView
             android:id="@+id/recomsong"
             android:textSize="20dp"
-            android:background="@color/cardview_shadow_end_color"
+            android:background="@color/lightgray"
             android:layout_width="match_parent"
             android:layout_height="100dp"
             android:gravity="center"
+            android:textColor="@color/lakeblue"
             android:text="Taylor Swift" />
 
     </LinearLayout>

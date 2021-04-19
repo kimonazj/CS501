@@ -3,7 +3,10 @@
     <string name="back">Back</string>
 
 <!--  for activity main  -->
-    <string name="project_name">What\'s the album</string>
+    <string name="project_name">What&rsquo;'s the album</string>
+    <string name="description">This is an amazing app that can recognize a cover of music album and then allows you to listen relevant songs in Spotify.
+        You can keep track of previous images and songs with Google!
+        Try it now!</string>
 
 <!--  for welcome page  -->
     <string name="welcome">Welcome!</string>
@@ -27,7 +30,7 @@
     <string name="Upload">Take a New Photo</string>
     <string name="result">Search Result</string>
     <string name="or">OR</string>
-    <string name="type_search">Type name of album here</string>
+    <string name="type_search">Type here and search!</string>
     <string name="search">Search</string>
 
 

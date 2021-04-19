@@ -11,6 +11,7 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="@string/get_new_album"
+        android:textColor="@color/lakeblue"
         android:textStyle="bold"
         android:textSize="24sp"
         android:layout_marginTop="70dp"
@@ -67,8 +68,8 @@
         <EditText
             android:id="@+id/albumstring"
             android:layout_width="200dp"
-            android:layout_height="wrap_content"
-            android:layout_weight="1"
+            android:layout_height="50dp"
+            android:background="@color/lightgray"
             android:ems="10"
             android:hint="@string/type_search"
              />
@@ -76,7 +77,7 @@
         <Button
             android:id="@+id/stringbtn"
             android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
+            android:layout_height="50dp"
             android:layout_weight="1"
             android:text="@string/search" />
     </LinearLayout>
