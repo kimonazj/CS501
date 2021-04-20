@@ -215,15 +215,17 @@ public class MainActivity2 extends AppCompatActivity {
     protected void onStart() {
         super.onStart();
 
-        // extract the text we got from the Text Recognition to use for our API calls
+        // extract relevant information from the previous activity
+        // to process and adjust the UI accordingly
         setSearchInput();
 
+        // if we received an album name from the search/text recognition activity
         if(album_output != null){
 
             if (album_output.equals("")) {
                 // if any error from the text recognition results in an empty string,
                 // notify user with a Toast
-                Toast.makeText(this, R.string.search_again, Toast.LENGTH_SHORT);
+                Toast.makeText(this, R.string.search_again, Toast.LENGTH_SHORT).show();
 
                 showAlbumName.setText(R.string.no_song);
 
@@ -232,14 +234,17 @@ public class MainActivity2 extends AppCompatActivity {
                 startAlbumSearch();
             }
 
+        // if we received an artist's name from the welcome page
         }else if(artist_output != null){
 
             // search based on artist
             startRecommendedArtistTrackSearch();
 
+
+        // if we received information of a song from the history
         }else if(history_uri_output != null){
 
-            // replay a song from the user's history.
+            // set up our global variables to replay a song from the user's history.
             SONG_URI = history_uri_output;
             ALBUM_ARTIST = history_artist_output;
             ALBUM_NAME = history_album_output;
@@ -289,8 +294,8 @@ public class MainActivity2 extends AppCompatActivity {
     }
 
     private void setSearchInput() {
-        // Using the intent that activated this activity, store the search input
-        // into our global variable
+        // Using the intent that activated this activity, store the extra input
+        // into our global variables
         Intent intent = getIntent();
 
         album_output = intent.getStringExtra("album");

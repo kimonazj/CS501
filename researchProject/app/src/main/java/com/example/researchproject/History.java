@@ -131,10 +131,10 @@ public class History extends AppCompatActivity {
     private void setHistoryListview(HistoryWithAlbums historyWithAlbums) {
         this.historyWithAlbums = historyWithAlbums;
 
-        if (historyWithAlbums == null) {
+        if (historyWithAlbums.albums.size() == 0) {
             // if there is no history, default song will be Taylor Swift's welcome to new york
             songHistory.add("Welcome To New York" + " by " + "Taylor Swift" + "\nAlbum: " + "1989");
-            albumMap.put("Welcome To New York", "https://open.spotify.com/track/6qnM0XXPZOINWA778uNqQ9?si=f517332dcd7344f2");
+            albumMap.put("Welcome To New York", "spotify:track:6qnM0XXPZOINWA778uNqQ9");
         }
         else {
 

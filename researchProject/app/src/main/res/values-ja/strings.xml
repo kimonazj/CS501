@@ -36,5 +36,5 @@
     <string name="choose_one">アルバムを選択して、Spotifyに聞きますよ！</string>
     <string name="play_song">音楽を再生する</string>
     <string name="selectedsong">選択したタイトル</string>
-    <string name="no_song_selected">No Song Selected Yet.</string>
+    <string name="no_song_selected">まだ何も選択しません</string>
 </resources>
